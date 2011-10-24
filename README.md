@@ -56,23 +56,23 @@ The specification give some data tags for the server response. If you want to wo
 type you must cast the returning `Object` from the `call` method to its specific type.
 Which type to cast which XML server response, tells the following list:
 
-`i4`,`int`	=> Integer
+`i4`,`int`	=> `Integer`
 
-`boolean`	=> Boolean
+`boolean`	=> `Boolean`
 
-`string`	=> String
+`string`	=> `String`
 
-`double`	=> Double
+`double`	=> `Double`
 
-`dateTime.iso8601`	=> Date
+`dateTime.iso8601`	=> `Date`
 
-`base64`	=> Byte[]
+`base64`	=> `Byte[]`
 
-`array`		=> Object[]
+`array`		=> `Object[]`
 
-`struct`	=> Map<String,Object>
+`struct`	=> `Map<String,Object>`
 
-`i8`		=> Long (see Flags)
+`i8`		=> `Long` (see Flags)
 
 
 Flags
