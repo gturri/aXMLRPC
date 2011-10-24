@@ -130,7 +130,7 @@ public class Base64 {
 	 * Encode a byte array and return the encoded byte array. Bytes that has been
 	 * appended to pad the string to a multiple of four are set to -1 in the array.
 	 *
-	 * @param in A string to encode.
+	 * @param inArray A string to encode.
 	 * @return The encoded byte array.
 	 */
 	public static byte[] encodeAsBytes(byte[] inArray) {

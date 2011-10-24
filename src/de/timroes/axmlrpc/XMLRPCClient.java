@@ -8,8 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -220,7 +218,7 @@ public class XMLRPCClient {
 	 * Read the readme file delivered with the source code of this library for more
 	 * information.
 	 *
-	 * @param method A method name to call.
+	 * @param methodName A method name to call.
 	 * @param param1 The first parameter of the method.
 	 * @return The result of the server.
 	 * @throws XMLRPCException Will be thrown if an error occured during the call.
@@ -238,7 +236,7 @@ public class XMLRPCClient {
 	 * Read the readme file delivered with the source code of this library for more
 	 * information.
 	 *
-	 * @param method A method name to call.
+	 * @param methodName A method name to call.
 	 * @param param1 The first parameter of the method.
 	 * @param param2 The second parameter of the method.
 	 * @return The result of the server.
@@ -257,7 +255,7 @@ public class XMLRPCClient {
 	 * Read the readme file delivered with the source code of this library for more
 	 * information.
 	 *
-	 * @param method A method name to call.
+	 * @param methodName A method name to call.
 	 * @param param1 The first parameter of the method.
 	 * @param param2 The second parameter of the method.
 	 * @param param3 The third parameter of the method.
@@ -278,7 +276,7 @@ public class XMLRPCClient {
 	 * Read the readme file delivered with the source code of this library for more
 	 * information.
 	 *
-	 * @param method A method name to call.
+	 * @param methodName A method name to call.
 	 * @param param1 The first parameter of the method.
 	 * @param param2 The second parameter of the method.
 	 * @param param3 The third parameter of the method.

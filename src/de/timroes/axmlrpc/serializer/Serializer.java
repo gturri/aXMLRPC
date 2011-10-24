@@ -17,6 +17,7 @@ public interface Serializer {
 	 *
 	 * @param content Must be an xml element of a specific type.
 	 * @return The deserialized content.
+	 * @throws XMLRPCException Will be thrown whenervt the deserialization fails.
 	 */
 	public Object deserialize(Element content) throws XMLRPCException;
 
