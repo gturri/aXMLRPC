@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,12 +71,20 @@ public class XMLRPCClient {
 	 */
 	public static final int FLAGS_8BYTE_INT = 0x02;
 
+	/**
+	 * With this flag, the client will be able to handle cookies, meaning saving cookies
+	 * from the server and sending it with every other request again. This is needed
+	 * for some XML-RPC interfaces that support login.
+	 */
+	public static final int FLAGS_ENABLE_COOKIES = 0x04;
+
 	private int flags;
 
 	private URL url;
 	private Map<String,String> httpParameters = new HashMap<String, String>();
 
 	private ResponseParser responseParser;
+	private CookieManager cookieManager;
 
 	/**
 	 * Create a new XMLRPC client for the given url.
@@ -92,6 +102,8 @@ public class XMLRPCClient {
 		this.flags = flags;
 		// Create a parser for the http responses.
 		responseParser = new ResponseParser();
+
+		cookieManager = new CookieManager(flags);
 
 		httpParameters.put(CONTENT_TYPE, TYPE_XML);
 		httpParameters.put(USER_AGENT, userAgent);
@@ -517,6 +529,8 @@ public class XMLRPCClient {
 					http.setRequestProperty(param.getKey(), param.getValue());
 				}
 
+				cookieManager.setCookies(http);
+
 				OutputStreamWriter stream = new OutputStreamWriter(http.getOutputStream());
 				stream.write(c.getXML());
 				stream.flush();
@@ -534,6 +548,8 @@ public class XMLRPCClient {
 						throw new XMLRPCException("The Content-Type of the response must be text/xml.");
 					}
 				}
+
+				cookieManager.readCookies(http);
 
 				return responseParser.parse(istream);
 			} catch (IOException ex) {

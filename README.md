@@ -135,6 +135,13 @@ but some libraries and servers support this behaviour.
 If this isn't enabled you cannot recieve 8 byte integers and if you try to
 send a long, the value must be within the 4 byte integer range.
 
+
+#### FLAGS_ENABLE_COOKIES
+
+With this flag, the client will be able to handle cookies, meaning saving cookies
+from the server and sending it with every other request again. This is needed
+for some XML-RPC interfaces that support login.
+
 License
 =======
 

@@ -1,0 +1,77 @@
+package de.timroes.axmlrpc;
+
+import java.net.HttpURLConnection;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * The CookieManager handles cookies for the http requests.
+ * If the FLAGS_ENABLE_COOKIES has been set, it will save cookies
+ * and send it with every request.
+ *
+ * @author Tim Roes
+ */
+public class CookieManager {
+
+	private static final String SET_COOKIE = "Set-Cookie";
+	private static final String COOKIE = "Cookie";
+
+	private int flags;
+	private Map<String,String> cookies = new HashMap<String, String>();
+
+	/**
+	 * Create a new CookieManager with the given flags.
+	 *
+	 * @param flags A combination of flags to be set.
+	 */
+	public CookieManager(int flags) {
+		this.flags = flags;
+	}
+
+	/**
+	 * Read the cookies from an http response. It will look at every Set-Cookie
+	 * header and put the cookie to the map of cookies.
+	 *
+	 * @param http A http connection.
+	 */
+	public void readCookies(HttpURLConnection http) {
+
+		// Only save cookies if FLAGS_ENABLE_COOKIES has been set.
+		if((flags & XMLRPCClient.FLAGS_ENABLE_COOKIES) == 0)
+			return;
+
+		String cookie;
+		String[] split;
+
+		// Extract every Set-Cookie field and put the cookie to the cookies map.
+		for(int i = 0; i < http.getHeaderFields().size(); i++) {
+			if((SET_COOKIE.equals(http.getHeaderFieldKey(i)))) {
+				cookie = http.getHeaderField(i).split(";")[0];
+				split = cookie.split("=");
+				cookies.put(split[0], split[1]);
+			}
+		}
+
+	}
+
+	/**
+	 * Write the cookies to a http connection. It will set the Cookie field
+	 * to all currently set cookies in the map.
+	 *
+	 * @param http A http connection.
+	 */
+	public void setCookies(HttpURLConnection http) {
+
+		// Only save cookies if FLAGS_ENABLE_COOKIES has been set.
+		if((flags & XMLRPCClient.FLAGS_ENABLE_COOKIES) == 0)
+			return;
+
+		String concat = "";
+		for(Map.Entry<String,String> cookie : cookies.entrySet()) {
+			concat += cookie.getKey() + "=" + cookie.getValue() + "; ";
+		}
+		http.setRequestProperty(COOKIE, concat);
+
+	}
+
+}
