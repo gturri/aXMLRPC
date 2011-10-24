@@ -65,8 +65,6 @@ public class Call {
 			}
 		}
 
-		System.out.println(creator.toString());
-
 		return creator.toString();
 	}
 
