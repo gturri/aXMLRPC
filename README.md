@@ -35,19 +35,19 @@ How to use the library?
 
 You can use the library by initiating an `XMLRPCClient` and make calls over it:
 
-   try {
-      XMLRPCClient client = new XMLRPCClient(new URL("http://example.com/xmlrpc"));
+	try {
+		XMLRPCClient client = new XMLRPCClient(new URL("http://example.com/xmlrpc"));
 	
-      Boolean b = (Boolean)client.call("isServerOk");
-      Integer i = (Integer)client.call("add", 5, 10);
-
-   } catch(XMLRPCServerException ex) {
-      // The server throw an error.
-   } catch(XMLRPCException ex) {
-      // An error occured in the client.
-   } catch(Exception ex) {
-      // Any other exception
-   }
+		Boolean b = (Boolean)client.call("isServerOk");
+		Integer i = (Integer)client.call("add", 5, 10);
+	
+	} catch(XMLRPCServerException ex) {
+		// The server throw an error.
+	} catch(XMLRPCException ex) {
+		// An error occured in the client.
+	} catch(Exception ex) {
+		// Any other exception
+	}
 
 The data types
 --------------
