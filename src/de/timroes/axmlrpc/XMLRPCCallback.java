@@ -9,10 +9,28 @@ package de.timroes.axmlrpc;
  */
 public interface XMLRPCCallback {
 
-	public void onResponse(long call, Object result);
+	/**
+	 * This callback is called whenever the server successfully responds.
+	 *
+	 * @param id The id as returned by the XMLRPCClient.asyncCall(..) method for this request.
+	 * @param result The Object returned from the server.
+	 */
+	public void onResponse(long id, Object result);
 
-	public void onError(long call, XMLRPCException error);
+	/**
+	 * This callback is called whenever an error occurs during the method call.
+	 *
+	 * @param id The id as returned by the XMLRPCClient.asyncCall(..) method for this request.
+	 * @param error The error occured.
+	 */
+	public void onError(long id, XMLRPCException error);
 
-	public void onServerError(long call, XMLRPCServerException error);
+	/**
+	 * This callback is called whenever the server returns an error.
+	 *
+	 * @param id The id as returned by the XMLRPCClient.asyncCall(..) method for this request.
+	 * @param error The error returned from the server.
+	 */
+	public void onServerError(long id, XMLRPCServerException error);
 
 }
