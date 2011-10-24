@@ -57,12 +57,19 @@ type you must cast the returning `Object` from the `call` method to its specific
 Which type to cast which XML server response, tells the following list:
 
 `i4`,`int`	=> Integer
+
 `boolean`	=> Boolean
+
 `string`	=> String
+
 `double`	=> Double
+
 `dateTime.iso8601`	=> Date
+
 `base64`	=> Byte[]
+
 `array`		=> Object[]
+
 `struct`	=> Map<String,Object>
 
 `i8`		=> Long (see Flags)
@@ -74,9 +81,9 @@ Flags
 The client takes as second parameter (or third if an user agent is given) 
 a combination of multiple flags. It could work like the following example:
 
-   // ...
-   XMLRPCClient client = new XMLRPCClient(url, FLAGS_STRICT | FLAGS_8BYTE_INT);
-   // ...
+	// ...
+	XMLRPCClient client = new XMLRPCClient(url, FLAGS_STRICT | FLAGS_8BYTE_INT);
+	// ...
 
 The following flags are implemented:
 
