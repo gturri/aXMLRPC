@@ -40,7 +40,6 @@ You can use the library by initiating an `XMLRPCClient` and make calls over it:
 	
 		Boolean b = (Boolean)client.call("isServerOk");
 		Integer i = (Integer)client.call("add", 5, 10);
-	
 	} catch(XMLRPCServerException ex) {
 		// The server throw an error.
 	} catch(XMLRPCException ex) {
@@ -99,10 +98,10 @@ Normally this is not needed.
 #### FLAGS_8BYTE_INT
 
 The client will be able to handle 8 byte integer values (longs).
-The xml type tag <i8> will be used. This is not in the specification
+The xml type tag `<i8>` will be used. This is not in the specification
 but some libraries and servers support this behaviour.
 If this isn't enabled you cannot recieve 8 byte integers and if you try to
-send a long the value must be within the 4byte integer range.
+send a long, the value must be within the 4 byte integer range.
 
 License
 =======
