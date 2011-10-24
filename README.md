@@ -56,6 +56,30 @@ There is also the possibility to overwrite the user agent string the client will
 	XMLRPCClient client = new XMLRPCClient(url, "MyUserAgent", new Object[]{ o1, o2, o3 });
 	// ...
 
+The above method call is synchronous. So the method `call` will return when the server responded
+or an error occured. There is also a possibility for asynchronous server calls.
+You need to implement an XMLRPCCallback that will get noticed about the respone (or error) from
+the server. The `callAsync` method can be used to make asynchronous calls. It returns an identifier
+that will also be send to the XMLRPCCallback instance with the response of the server, so your
+application can make multiple calls concurrently and use one listener for them, that distinguish 
+between the different request by their ids.
+
+	XMLRPCCallback listener = new XMLRPCCallback() {
+		public void onResponse(long id, Object result) {
+			// Handling the servers response
+		}
+		public void onError(long id, XMLRPCException error) {
+			// Handling any error in the library
+		}
+		public void onServerError(long id, XMLRPCServerException error) {
+			// Handling an error response from the server
+		}
+	};
+
+	XMLRPCClient client = new XMLRPCClient(url);
+	long id = client.callAsync(listener, "add", 5, 10);
+
+
 The data types
 --------------
 
