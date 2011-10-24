@@ -30,6 +30,7 @@ public class SerializerHandler {
 	public static final String TYPE_STRUCT = "struct";
 	public static final String TYPE_ARRAY = "array";
 	public static final String TYPE_BASE64 = "base64";
+	public static final String TYPE_NULL = "nil";
 
 	private static SerializerHandler instance;
 
@@ -66,6 +67,7 @@ public class SerializerHandler {
 	private DateTimeSerializer datetime = new DateTimeSerializer();
 	private ArraySerializer array = new ArraySerializer();
 	private Base64Serializer base64 = new Base64Serializer();
+	private NullSerializer nil = new NullSerializer();
 	
 	private int flags;
 
@@ -95,7 +97,9 @@ public class SerializerHandler {
 
 		String type = element.getNodeName();
 
-		if(TYPE_STRING.equals(type)) {
+		if((flags & XMLRPCClient.FLAGS_NIL) != 0 && TYPE_NULL.equals(type)) {
+			s = nil;
+		} else if(TYPE_STRING.equals(type)) {
 			s = string;
 		} else if(TYPE_BOOLEAN.equals(type)) {
 			s = bool;
@@ -139,7 +143,9 @@ public class SerializerHandler {
 
 		Serializer s = null;
 
-		if(object instanceof String) {
+		if((flags & XMLRPCClient.FLAGS_NIL) != 0 && object == null) {
+			s = nil;
+		} else if(object instanceof String) {
 			s = string;
 		} else if(object instanceof Boolean) {
 			s = bool;

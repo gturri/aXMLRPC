@@ -78,6 +78,12 @@ public class XMLRPCClient {
 	 */
 	public static final int FLAGS_ENABLE_COOKIES = 0x04;
 
+	/**
+	 * The client will be able to send null values. A null value will be send
+	 * as <nil/>. This extension is described under: http://ontosys.com/xml-rpc/extensions.php
+	 */
+	public static final int FLAGS_NIL = 0x08;
+
 	private int flags;
 
 	private URL url;

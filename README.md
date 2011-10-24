@@ -142,6 +142,12 @@ With this flag, the client will be able to handle cookies, meaning saving cookie
 from the server and sending it with every other request again. This is needed
 for some XML-RPC interfaces that support login.
 
+
+#### FLAGS_NIL
+
+The client will be able to send `null` values. A `null` value will be send
+as `<nil/>`. This extension is described under: http://ontosys.com/xml-rpc/extensions.php
+
 License
 =======
 
