@@ -160,3 +160,9 @@ For the uninformed reader: What does MIT mean?
 - You don't need to notice me about anything of the above.
 - If you make changes to it, it would be nice (but not obliged), if you would share it with me again.
 - Put the copyright notice and the LICENSE file in any copy you make.
+
+Bugs?
+=====
+
+If you find a bug or wish some enhancements for the library, please
+fill an issue here on github or contact me otherwise (www.timroes.de).
