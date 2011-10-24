@@ -48,6 +48,14 @@ You can use the library by initiating an `XMLRPCClient` and make calls over it:
 		// Any other exception
 	}
 
+If your method call needs more than four parameters, you must pack them in an Array of `Object`
+like in the following example. (You can do this of course also with less than four parameters.)
+There is also the possibility to overwrite the user agent string the client will use for http requests.
+
+	// ...
+	XMLRPCClient client = new XMLRPCClient(url, "MyUserAgent", new Object[]{ o1, o2, o3 });
+	// ...
+
 The data types
 --------------
 
