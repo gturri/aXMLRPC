@@ -1,6 +1,9 @@
 package de.timroes.axmlrpc;
 
 /**
+ * The XMLRPCCallback interface must be implemented by a listener for an
+ * asynchronous call to a server method.
+ * When the server responds, the corresponding method on the listener is called.
  *
  * @author Tim Roes
  */

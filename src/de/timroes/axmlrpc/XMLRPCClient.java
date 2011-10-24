@@ -9,6 +9,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An XMLRPCClient is a client used to make XML-RPC (Extensible Markup Language
@@ -173,49 +175,7 @@ public class XMLRPCClient {
 	 * @throws XMLRPCException Will be thrown if an error occured during the call.
 	 */
 	public Object call(String method, Object[] params) throws XMLRPCException {
-
-		try {
-			
-			Call c = createCall(method, params);
-
-			URLConnection conn = this.url.openConnection();
-			if(!(conn instanceof HttpURLConnection)) {
-				throw new IllegalArgumentException("The URL is not for a http connection.");
-			}
-
-			HttpURLConnection http = (HttpURLConnection)conn;
-			http.setRequestMethod(HTTP_POST);
-			http.setDoOutput(true);
-			http.setDoInput(true);
-
-			// Set the request parameters
-			for(Map.Entry<String,String> param : httpParameters.entrySet()) {
-				http.setRequestProperty(param.getKey(), param.getValue());
-			}
-
-			OutputStreamWriter stream = new OutputStreamWriter(http.getOutputStream());
-			stream.write(c.getXML());
-			stream.flush();
-			stream.close();
-
-			InputStream istream = http.getInputStream();
-
-			if(http.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				throw new XMLRPCException("The status code of the http response must be 200.");
-			}
-
-			// Check for strict parameters
-			if(isFlagSet(FLAGS_STRICT)) {
-				if(!http.getContentType().startsWith(TYPE_XML)) {
-					throw new XMLRPCException("The Content-Type of the response must be text/xml.");
-				}
-			}
-
-			return responseParser.parse(istream);
-		} catch (IOException ex) {
-			throw new XMLRPCException(ex);
-		}
-		
+		return new Caller().call(method, params);
 	}
 
 	/**
@@ -315,6 +275,14 @@ public class XMLRPCClient {
 		return call(methodName, new Object[]{param1,param2,param3,param4});
 	}
 
+
+	public long callAsync(XMLRPCCallback listener, String methodName, Object[] params) {
+		long id = System.currentTimeMillis();
+		new Caller(listener, id, methodName, params).start();
+		return id;
+
+	}
+
 	/**
 	 * Create a call object from a given method string and parameters.
 	 *
@@ -340,6 +308,88 @@ public class XMLRPCClient {
 	 */
 	private boolean isFlagSet(int flag) {
 		return (this.flags & flag) != 0;
+	}
+
+
+	private class Caller extends Thread {
+
+		private XMLRPCCallback listener;
+		private long threadId;
+		private String methodName;
+		private Object[] params;
+
+		public Caller(XMLRPCCallback listener, long threadId, String methodName, Object[] params) {
+			this.listener = listener;
+			this.threadId = threadId;
+			this.methodName = methodName;
+			this.params = params;
+		}
+
+		public Caller() { }
+
+		@Override
+		public void run() {
+
+			if(listener == null)
+				return;
+
+			try {
+				Object o = this.call(methodName, params);
+				listener.onResponse(threadId, o);
+			} catch(XMLRPCServerException ex) {
+				listener.onServerError(threadId, ex);
+			} catch (XMLRPCException ex) {
+				listener.onError(threadId, ex);
+			}
+
+		}
+
+		public Object call(String methodName, Object[] params) throws XMLRPCException {
+			
+			try {
+
+				Call c = createCall(methodName, params);
+
+				URLConnection conn = url.openConnection();
+				if(!(conn instanceof HttpURLConnection)) {
+					throw new IllegalArgumentException("The URL is not for a http connection.");
+				}
+
+				HttpURLConnection http = (HttpURLConnection)conn;
+				http.setRequestMethod(HTTP_POST);
+				http.setDoOutput(true);
+				http.setDoInput(true);
+
+				// Set the request parameters
+				for(Map.Entry<String,String> param : httpParameters.entrySet()) {
+					http.setRequestProperty(param.getKey(), param.getValue());
+				}
+
+				OutputStreamWriter stream = new OutputStreamWriter(http.getOutputStream());
+				stream.write(c.getXML());
+				stream.flush();
+				stream.close();
+
+				InputStream istream = http.getInputStream();
+
+				if(http.getResponseCode() != HttpURLConnection.HTTP_OK) {
+					throw new XMLRPCException("The status code of the http response must be 200.");
+				}
+
+				// Check for strict parameters
+				if(isFlagSet(FLAGS_STRICT)) {
+					if(!http.getContentType().startsWith(TYPE_XML)) {
+						throw new XMLRPCException("The Content-Type of the response must be text/xml.");
+					}
+				}
+
+				return responseParser.parse(istream);
+			} catch (IOException ex) {
+				throw new XMLRPCException(ex);
+			}
+
+		}
+
 	}
 
 }
