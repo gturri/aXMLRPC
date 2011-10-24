@@ -9,8 +9,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An XMLRPCClient is a client used to make XML-RPC (Extensible Markup Language
@@ -276,11 +274,128 @@ public class XMLRPCClient {
 	}
 
 
+	/**
+	 * Asynchronously call a remote procedure on the server. The method must be
+	 * described by a method  name. If the method requires parameters, this must
+	 * be set. When the server returns a response the onResponse method is called
+	 * on the listener. If the server returns an error the onServerError method
+	 * is called on the listener. The onError method is called whenever something
+	 * fails. This method returns immediately and returns an identifier for the
+	 * request. All listener methods get this id as a parameter to distinguish between
+	 * multiple requests.
+	 *
+	 * @param listener A listener, which will be notified about the server response or errors.
+	 * @param methodName A method name to call on the server.
+	 * @param params An array of parameters for the method.
+	 * @return The id of the current request.
+	 */
 	public long callAsync(XMLRPCCallback listener, String methodName, Object[] params) {
 		long id = System.currentTimeMillis();
 		new Caller(listener, id, methodName, params).start();
 		return id;
+	}
 
+	/**
+	 * Asynchronously call a remote procedure on the server. The method must be
+	 * described by a method  name. This call is only for methods that doesn't require
+	 * any parameters. When the server returns a response the onResponse method is called
+	 * on the listener. If the server returns an error the onServerError method
+	 * is called on the listener. The onError method is called whenever something
+	 * fails. This method returns immediately and returns an identifier for the
+	 * request. All listener methods get this id as a parameter to distinguish between
+	 * multiple requests.
+	 *
+	 * @param listener A listener, which will be notified about the server response or errors.
+	 * @param methodName A method name to call on the server.
+	 * @return The id of the current request.
+	 */
+	public long callAsync(XMLRPCCallback listener, String methodName) {
+		return callAsync(listener, methodName, null);
+	}
+
+	/**
+	 * Asynchronously call a remote procedure on the server. The method must be
+	 * described by a method  name. If the method requires parameters, this must
+	 * be set. When the server returns a response the onResponse method is called
+	 * on the listener. If the server returns an error the onServerError method
+	 * is called on the listener. The onError method is called whenever something
+	 * fails. This method returns immediately and returns an identifier for the
+	 * request. All listener methods get this id as a parameter to distinguish between
+	 * multiple requests.
+	 *
+	 * @param listener A listener, which will be notified about the server response or errors.
+	 * @param methodName A method name to call on the server.
+	 * @param param1 The first parameter of the method.
+	 * @return The id of the current request.
+	 */
+	public long callAsync(XMLRPCCallback listener, String methodName, Object param1) {
+		return callAsync(listener, methodName, new Object[]{param1});
+	}
+
+	/**
+	 * Asynchronously call a remote procedure on the server. The method must be
+	 * described by a method  name. If the method requires parameters, this must
+	 * be set. When the server returns a response the onResponse method is called
+	 * on the listener. If the server returns an error the onServerError method
+	 * is called on the listener. The onError method is called whenever something
+	 * fails. This method returns immediately and returns an identifier for the
+	 * request. All listener methods get this id as a parameter to distinguish between
+	 * multiple requests.
+	 *
+	 * @param listener A listener, which will be notified about the server response or errors.
+	 * @param methodName A method name to call on the server.
+	 * @param param1 The first parameter of the method.
+	 * @param param2 The second parameter of the method.
+	 * @return The id of the current request.
+	 */
+	public long callAsync(XMLRPCCallback listener, String methodName, Object param1,
+			Object param2) {
+		return callAsync(listener, methodName, new Object[]{param1,param2});
+	}
+
+	/**
+	 * Asynchronously call a remote procedure on the server. The method must be
+	 * described by a method  name. If the method requires parameters, this must
+	 * be set. When the server returns a response the onResponse method is called
+	 * on the listener. If the server returns an error the onServerError method
+	 * is called on the listener. The onError method is called whenever something
+	 * fails. This method returns immediately and returns an identifier for the
+	 * request. All listener methods get this id as a parameter to distinguish between
+	 * multiple requests.
+	 *
+	 * @param listener A listener, which will be notified about the server response or errors.
+	 * @param methodName A method name to call on the server.
+	 * @param param1 The first parameter of the method.
+	 * @param param2 The second parameter of the method.
+	 * @param param3 The third parameter of the method.
+	 * @return The id of the current request.
+	 */
+	public long callAsync(XMLRPCCallback listener, String methodName, Object param1,
+			Object param2, Object param3) {
+		return callAsync(listener, methodName, new Object[]{param1,param2,param3});
+	}
+
+	/**
+	 * Asynchronously call a remote procedure on the server. The method must be
+	 * described by a method  name. If the method requires parameters, this must
+	 * be set. When the server returns a response the onResponse method is called
+	 * on the listener. If the server returns an error the onServerError method
+	 * is called on the listener. The onError method is called whenever something
+	 * fails. This method returns immediately and returns an identifier for the
+	 * request. All listener methods get this id as a parameter to distinguish between
+	 * multiple requests.
+	 *
+	 * @param listener A listener, which will be notified about the server response or errors.
+	 * @param methodName A method name to call on the server.
+	 * @param param1 The first parameter of the method.
+	 * @param param2 The second parameter of the method.
+	 * @param param3 The third parameter of the method.
+	 * @param param4 The fourth parameter of the method.
+	 * @return The id of the current request.
+	 */
+	public long callAsync(XMLRPCCallback listener, String methodName, Object param1,
+			Object param2, Object param3, Object param4) {
+		return callAsync(listener, methodName, new Object[]{param1,param2,param3,param4});
 	}
 
 	/**
@@ -310,7 +425,10 @@ public class XMLRPCClient {
 		return (this.flags & flag) != 0;
 	}
 
-
+	/**
+	 * The Caller class is used to make asynchronous calls to the server.
+	 * For synchronous calls the Thread function of this class isn't used.
+	 */
 	private class Caller extends Thread {
 
 		private XMLRPCCallback listener;
@@ -318,6 +436,14 @@ public class XMLRPCClient {
 		private String methodName;
 		private Object[] params;
 
+		/**
+		 * Create a new Caller for asynchronous use.
+		 *
+		 * @param listener The listener to notice about the response or an error.
+		 * @param threadId An id that will be send to the listener.
+		 * @param methodName The method name to call.
+		 * @param params The parameters of the call or null.
+		 */
 		public Caller(XMLRPCCallback listener, long threadId, String methodName, Object[] params) {
 			this.listener = listener;
 			this.threadId = threadId;
@@ -325,8 +451,19 @@ public class XMLRPCClient {
 			this.params = params;
 		}
 
+		/**
+		 * Create a new Caller for synchronous use.
+		 * If the caller has been created with this constructor you cannot use the
+		 * start method to start it as a thread. But you can call the call method
+		 * on it for synchronous use.
+		 */
 		public Caller() { }
 
+		/**
+		 * The run method is invoked when the thread gets started.
+		 * This will only work, if the Caller has been created with parameters.
+		 * It execute the call method and notify the listener about the result.
+		 */
 		@Override
 		public void run() {
 
@@ -344,6 +481,21 @@ public class XMLRPCClient {
 
 		}
 
+
+		/**
+		 * Call a remote procedure on the server. The method must be described by
+		 * a method name. If the method requires parameters, this must be set.
+		 * The type of the return object depends on the server. You should consult
+		 * the server documentation and then cast the return value according to that.
+		 * This method will block until the server returned a result (or an error occured).
+		 * Read the readme file delivered with the source code of this library for more
+		 * information.
+		 *
+		 * @param method A method name to call.
+		 * @param params An array of parameters for the method.
+		 * @return The result of the server.
+		 * @throws XMLRPCException Will be thrown if an error occured during the call.
+		 */
 		public Object call(String methodName, Object[] params) throws XMLRPCException {
 			
 			try {
