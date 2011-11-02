@@ -40,15 +40,17 @@ public class CookieManager {
 		if((flags & XMLRPCClient.FLAGS_ENABLE_COOKIES) == 0)
 			return;
 
-		String cookie;
+		String cookie, key;
 		String[] split;
 
 		// Extract every Set-Cookie field and put the cookie to the cookies map.
 		for(int i = 0; i < http.getHeaderFields().size(); i++) {
-			if((SET_COOKIE.equals(http.getHeaderFieldKey(i)))) {
+			key = http.getHeaderFieldKey(i);
+			if(key != null && SET_COOKIE.toLowerCase().equals(key.toLowerCase())) {
 				cookie = http.getHeaderField(i).split(";")[0];
 				split = cookie.split("=");
-				cookies.put(split[0], split[1]);
+				if(split.length >= 2)
+					cookies.put(split[0], split[1]);
 			}
 		}
 
