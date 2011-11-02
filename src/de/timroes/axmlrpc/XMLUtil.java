@@ -54,7 +54,7 @@ public class XMLUtil {
 
 	/**
 	 * Returns the text node from a given NodeList. If the list contains
-	 * more then just a text node, an exception will be thrown.
+	 * more then just text nodes, an exception will be thrown.
 	 *
 	 * @param list The given list of nodes.
 	 * @return The text of the given node list.
@@ -63,15 +63,26 @@ public class XMLUtil {
 	 */
 	public static String getOnlyTextContent(NodeList list) throws XMLRPCException {
 
-		if(list.getLength() != 1) {
-			throw new XMLRPCException("Element has more then a text child.");
+		StringBuilder builder = new StringBuilder();
+		Node n;
+
+		for(int i = 0; i < list.getLength(); i++) {
+			n = list.item(i);
+
+			// Skip comments inside text tag.
+			if(n.getNodeType() == Node.COMMENT_NODE) {
+				continue;
+			}
+
+			if(n.getNodeType() != Node.TEXT_NODE) {
+				throw new XMLRPCException("Element must contain only text elements.");
+			}
+
+			builder.append(n.getNodeValue());
+
 		}
 
-		if(list.item(0).getNodeType() != Node.TEXT_NODE) {
-			throw new XMLRPCException("Element must contain only text.");
-		}
-
-		return list.item(0).getNodeValue();
+		return builder.toString();
 
 	}
 
