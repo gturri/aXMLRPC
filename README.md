@@ -30,6 +30,11 @@ The library itself is a NetBeans project and can be compiled either with NetBean
 with `ant`. The resulting JAR file can be used as a dependency in your project. If you
 use NetBeans you can make a dependency directly to the project.
 
+### Download the JAR library (not recommended)
+
+You can download a compiled jar file from the above Download tag and use it as a library
+for your project. This is not recommended, because you will not stay up to date to the sourcecode.
+
 How to use the library?
 =======================
 
