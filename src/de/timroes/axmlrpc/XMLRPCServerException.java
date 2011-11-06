@@ -16,6 +16,17 @@ public class XMLRPCServerException extends XMLRPCException {
 	}
 
 	/**
+	 * Returns the detail message string of this throwable.
+	 * It will have the server error number at the end.
+	 *
+	 * @return The detail message string of this error.
+	 */
+	@Override
+	public String getMessage() {
+		return super.getMessage() + " [" + errornr + "]";
+	}
+
+	/**
 	 * Return the error number.
 	 *
 	 * @return The error number.
