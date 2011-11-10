@@ -29,6 +29,13 @@ public class CookieManager {
 	}
 
 	/**
+	 * Delete all cookies.
+	 */
+	public void clearCookies() {
+		cookies.clear();
+	}
+
+	/**
 	 * Read the cookies from an http response. It will look at every Set-Cookie
 	 * header and put the cookie to the map of cookies.
 	 *

@@ -175,6 +175,15 @@ public class XMLRPCClient {
 	}
 
 	/**
+	 * Delete all cookies currently used by the client.
+	 * This method has only an effect, as long as the FLAGS_ENABLE_COOKIES has
+	 * been set on this client.
+	 */
+	public void clearCookies() {
+		cookieManager.clearCookies();
+	}
+
+	/**
 	 * Call a remote procedure on the server. The method must be described by
 	 * a method name. If the method requires parameters, this must be set.
 	 * The type of the return object depends on the server. You should consult
