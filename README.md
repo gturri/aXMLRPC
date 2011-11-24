@@ -57,11 +57,12 @@ If your method call needs more than four parameters, you must pack them in an Ar
 like in the following example. (You can do this of course also with less than four parameters.)
 There is also the possibility to overwrite the user agent string the client will use for http requests.
 
-	// ...
-	XMLRPCClient client = new XMLRPCClient(url, "MyUserAgent", new Object[]{ o1, o2, o3 });
+	// ... The try-catch has been ommited for clarity.
+	XMLRPCClient client = new XMLRPCClient(url, "MyUserAgentString");
+	client.call("someMethod", new Object[]{ o1, o2, o3});
 	// ...
 
-The above method call is synchronous. So the method `call` will return when the server responded
+The above method calls are synchronous. So the method `call` will return when the server responded
 or an error occured. There is also a possibility for asynchronous server calls.
 You need to implement an XMLRPCCallback that will get noticed about the respone (or error) from
 the server. The `callAsync` method can be used to make asynchronous calls. It returns an identifier
