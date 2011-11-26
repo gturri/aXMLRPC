@@ -34,19 +34,20 @@ public class ArraySerializer implements Serializer {
 
 			value = XMLUtil.getOnlyChildElement(data.getChildNodes().item(i).getChildNodes());
 
+			if(value == null)
+				continue;
+			
 			// Strip only whitespace text elements and comments
 			if((value.getNodeType() == Node.TEXT_NODE
 						&& value.getNodeValue().trim().length() <= 0)
 					|| value.getNodeType() == Node.COMMENT_NODE)
 				continue;
 
-			if(value.getNodeType() != Node.ELEMENT_NODE
-					|| !ARRAY_VALUE.equals(value.getNodeName())) {
+			if(value.getNodeType() != Node.ELEMENT_NODE) {
 				throw new XMLRPCException("An array can only contain value tags.");
 			}
 
-			list.add(SerializerHandler.getDefault().deserialize(
-					XMLUtil.getOnlyChildElement(value.getChildNodes())));
+			list.add(SerializerHandler.getDefault().deserialize(value));
 
 		}
 
