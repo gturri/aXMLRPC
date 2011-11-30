@@ -103,7 +103,7 @@ Which type to cast which XML server response, tells the following list:
 
 `dateTime.iso8601`	=> `Date`
 
-`base64`	=> `Byte[]`
+`base64`	=> `byte[]` (`Byte[]` won't work)
 
 `array`		=> `Object[]`
 
