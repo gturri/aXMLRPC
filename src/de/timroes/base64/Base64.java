@@ -32,7 +32,6 @@ public class Base64 {
 		if(in.length() % 4 != 0) {
 			throw new IllegalArgumentException("The length of the input string must be a multiple of four.");
 		}
-		System.out.println(in);
 
 		if(!in.matches("^[A-Za-z0-9+/]*[=]{0,3}$")) {
 			throw new IllegalArgumentException("The argument contains illegal characters.");
