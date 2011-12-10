@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -86,6 +87,8 @@ public class XMLRPCClient {
 
 	private URL url;
 	private Map<String,String> httpParameters = new HashMap<String, String>();
+
+	private Map<Long,Caller> backgroundCalls = new HashMap<Long, Caller>();
 
 	private ResponseParser responseParser;
 	private CookieManager cookieManager;
@@ -424,6 +427,31 @@ public class XMLRPCClient {
 	}
 
 	/**
+	 * Cancel a specific asynchron call.
+	 * 
+	 * @param id The id of the call as returned by the callAsync method.
+	 */
+	public void cancel(long id) {
+
+		// Lookup the background call for the given id.
+		Caller cancel = backgroundCalls.get(id);
+		if(cancel == null) {
+			return;
+		}
+
+		// Cancel the thread
+		cancel.cancel();
+		
+		try {
+			// Wait for the thread
+			cancel.join();
+		} catch (InterruptedException ex) {
+			// Ignore this
+		}
+
+	}
+
+	/**
 	 * Create a call object from a given method string and parameters.
 	 *
 	 * @param method The method that should be called.
@@ -461,6 +489,9 @@ public class XMLRPCClient {
 		private String methodName;
 		private Object[] params;
 
+		private volatile boolean canceled;
+		private HttpURLConnection http;
+
 		/**
 		 * Create a new Caller for asynchronous use.
 		 *
@@ -496,16 +527,30 @@ public class XMLRPCClient {
 				return;
 
 			try {
+				backgroundCalls.put(threadId, this);
 				Object o = this.call(methodName, params);
 				listener.onResponse(threadId, o);
+			} catch(CancelException ex) {
+				// Don't notify the listener, if the call has been canceled.
 			} catch(XMLRPCServerException ex) {
 				listener.onServerError(threadId, ex);
 			} catch (XMLRPCException ex) {
 				listener.onError(threadId, ex);
+			} finally {
+				backgroundCalls.remove(threadId);
 			}
 
 		}
 
+		/**
+		 * Cancel this call. This will abort the network communication.
+		 */
+		public void cancel() {
+			// Set the flag, that this thread has been canceled
+			canceled = true;
+			// Disconnect the connection to the server
+			http.disconnect();
+		}
 
 		/**
 		 * Call a remote procedure on the server. The method must be described by
@@ -532,7 +577,7 @@ public class XMLRPCClient {
 					throw new IllegalArgumentException("The URL is not for a http connection.");
 				}
 
-				HttpURLConnection http = (HttpURLConnection)conn;
+				http = (HttpURLConnection)conn;
 				http.setRequestMethod(HTTP_POST);
 				http.setDoOutput(true);
 				http.setDoInput(true);
@@ -565,12 +610,24 @@ public class XMLRPCClient {
 				cookieManager.readCookies(http);
 
 				return responseParser.parse(istream);
+
+			} catch(SocketException ex) {
+				// If the thread has been canceled this exception will be thrown.
+				// So only throw an exception if the thread hasnt been canceled
+				// or if the thred has not been started in background.
+				if(!canceled || threadId <= 0) {
+					throw new XMLRPCException(ex);
+				} else {
+					throw new CancelException();
+				}
 			} catch (IOException ex) {
 				throw new XMLRPCException(ex);
-			}
+			} 
 
 		}
 
 	}
+
+	private class CancelException extends RuntimeException { }
 
 }
