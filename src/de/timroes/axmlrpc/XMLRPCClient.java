@@ -83,6 +83,14 @@ public class XMLRPCClient {
 	 */
 	public static final int FLAGS_NIL = 0x08;
 
+	/**
+	 * With this flag enabled, the XML-RPC client will ignore the HTTP status
+	 * code of the response from the server. According to specification the
+	 * status code must be 200. This flag is only needed for the use with 
+	 * not standard compliant servers.
+	 */
+	public static final int FLAGS_IGNORE_STATUSCODE = 0x10;
+
 	private int flags;
 
 	private URL url;
@@ -610,7 +618,8 @@ public class XMLRPCClient {
 
 				InputStream istream = http.getInputStream();
 
-				if(http.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				if(!isFlagSet(FLAGS_IGNORE_STATUSCODE)
+					&& http.getResponseCode() != HttpURLConnection.HTTP_OK) {
 					throw new XMLRPCException("The status code of the http response must be 200.");
 				}
 

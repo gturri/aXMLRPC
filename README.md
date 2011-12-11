@@ -154,6 +154,14 @@ for some XML-RPC interfaces that support login.
 The client will be able to send `null` values. A `null` value will be send
 as `<nil/>`. This extension is described under: http://ontosys.com/xml-rpc/extensions.php
 
+
+#### FLAGS_IGNORE_STATUSCODE
+
+With this flag enabled, the XML-RPC client will ignore the HTTP status
+code of the response from the server. According to specification the
+status code must be 200. This flag is only needed for the use with 
+not standard compliant servers.
+
 License
 =======
 
