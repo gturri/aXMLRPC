@@ -92,6 +92,7 @@ public class XMLRPCClient {
 
 	private ResponseParser responseParser;
 	private CookieManager cookieManager;
+	private AuthenticationManager authManager;
 
 	/**
 	 * Create a new XMLRPC client for the given url.
@@ -111,6 +112,7 @@ public class XMLRPCClient {
 		responseParser = new ResponseParser();
 
 		cookieManager = new CookieManager(flags);
+		authManager = new AuthenticationManager();
 
 		httpParameters.put(CONTENT_TYPE, TYPE_XML);
 		httpParameters.put(USER_AGENT, userAgent);
@@ -177,6 +179,17 @@ public class XMLRPCClient {
 		httpParameters.put(headerName, headerValue);
 	}
 
+	/**
+	 * Set the username and password that should be used to perform basic
+	 * http authentication.
+	 * 
+	 * @param user Username
+	 * @param pass Password
+	 */
+	public void setLoginData(String user, String pass) {
+		authManager.setAuthData(user, pass);
+	}
+	
 	/**
 	 * Delete all cookies currently used by the client.
 	 * This method has only an effect, as long as the FLAGS_ENABLE_COOKIES has
@@ -587,6 +600,7 @@ public class XMLRPCClient {
 					http.setRequestProperty(param.getKey(), param.getValue());
 				}
 
+				authManager.setAuthentication(http);
 				cookieManager.setCookies(http);
 
 				OutputStreamWriter stream = new OutputStreamWriter(http.getOutputStream());
