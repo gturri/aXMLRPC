@@ -16,7 +16,7 @@ How to include it?
 ==================
 
 How to include the aXMLRPC client into your project?
-There are two ways to do that:
+There are three different ways to do that:
 
 ### Include the source code
 
@@ -59,7 +59,7 @@ There is also the possibility to overwrite the user agent string the client will
 
 	// ... The try-catch has been ommited for clarity.
 	XMLRPCClient client = new XMLRPCClient(url, "MyUserAgentString");
-	client.call("someMethod", new Object[]{ o1, o2, o3});
+	client.call("someMethod", new Object[]{ o1, o2, o3 });
 	// ...
 
 The above method calls are synchronous. So the method `call` will return when the server responded
@@ -119,7 +119,8 @@ The client takes as second parameter (or third if an user agent is given)
 a combination of multiple flags. It could work like the following example:
 
 	// ...
-	XMLRPCClient client = new XMLRPCClient(url, FLAGS_STRICT | FLAGS_8BYTE_INT);
+	XMLRPCClient client = new XMLRPCClient(url, 
+		XMLRPCClient.FLAGS_STRICT | XMLRPCClient.FLAGS_8BYTE_INT);
 	// ...
 
 The following flags are implemented:
