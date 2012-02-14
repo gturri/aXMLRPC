@@ -163,6 +163,12 @@ code of the response from the server. According to specification the
 status code must be 200. This flag is only needed for the use with 
 not standard compliant servers.
 
+#### FLAGS_FORWARD
+
+With this flag enabled, the client will forward the request, if
+the 301 or 302 HTTP status code has been received. If this flag is not
+set, the client will throw an exception on these HTTP status codes.
+
 License
 =======
 

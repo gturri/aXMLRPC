@@ -35,6 +35,8 @@ public class XMLRPCClient {
 	static final String HOST = "Host";
 	static final String CONTENT_LENGTH = "Content-Length";
 	static final String HTTP_POST = "POST";
+	static final int HTTP_MOVED_PERMANENTLY = 301;
+	static final int HTTP_FOUND = 302;
 
 	/**
 	 * XML elements to be used.
@@ -90,6 +92,13 @@ public class XMLRPCClient {
 	 * not standard compliant servers.
 	 */
 	public static final int FLAGS_IGNORE_STATUSCODE = 0x10;
+	
+	/**
+	 * With this flag enabled, the client will forward the request, if
+	 * the 301 or 302 HTTP status code has been received. If this flag has not
+	 * been set, the client will throw an exception on these HTTP status codes.
+	 */
+	public static final int FLAGS_FORWARD = 0x20;
 
 	private int flags;
 
@@ -599,6 +608,7 @@ public class XMLRPCClient {
 				}
 
 				http = (HttpURLConnection)conn;
+				http.setInstanceFollowRedirects(false);
 				http.setRequestMethod(HTTP_POST);
 				http.setDoOutput(true);
 				http.setDoInput(true);
@@ -617,6 +627,40 @@ public class XMLRPCClient {
 				stream.close();
 
 				InputStream istream = http.getInputStream();
+				
+				// If status code is 301 Moved Permanently or 302 Found ...
+				if(http.getResponseCode() == HTTP_MOVED_PERMANENTLY 
+						|| http.getResponseCode() == HTTP_FOUND) {
+					// ... do either a foward
+					if(isFlagSet(FLAGS_FORWARD)) {
+						boolean temporaryForward = http.getResponseCode() == HTTP_FOUND;
+						
+						// Get new location from header field.
+						String newLocation = http.getHeaderField("Location");
+						// Try getting header in lower case, if no header has been found
+						if(newLocation == null || newLocation.length() <= 0)
+							newLocation = http.getHeaderField("location");
+						
+						// Set new location, disconnect current connection and request to new location.
+						URL oldURL = url;
+						url = new URL(newLocation);
+						http.disconnect();
+						Object forwardedResult = call(methodName, params);
+						
+						// In case of temporary forward, restore original URL again for next call.
+						if(temporaryForward) {
+							url = oldURL;
+						}
+						
+						return forwardedResult;	
+						
+					} else {
+						// ... or throw an exception
+						throw new XMLRPCException("The server responded with a http 301 or 302 status "
+								+ "code, but forwarding has not been enabled (FLAGS_FORWARD).");
+						
+					}
+				}
 
 				if(!isFlagSet(FLAGS_IGNORE_STATUSCODE)
 					&& http.getResponseCode() != HttpURLConnection.HTTP_OK) {
@@ -629,7 +673,7 @@ public class XMLRPCClient {
 						throw new XMLRPCException("The Content-Type of the response must be text/xml.");
 					}
 				}
-
+				
 				cookieManager.readCookies(http);
 
 				return responseParser.parse(istream);
