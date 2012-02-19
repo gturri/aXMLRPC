@@ -252,107 +252,9 @@ public class XMLRPCClient {
 	 * @return The result of the server.
 	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 	 */
-	public Object call(String method, Object[] params) throws XMLRPCException {
+	public Object call(String method, Object... params) throws XMLRPCException {
 		return new Caller().call(method, params);
 	}
-
-	/**
-	 * Call a remote procedure on the server. The method must be described by
-	 * a method name. This method is only for methods that doesn't require any parameters.
-	 * The type of the return object depends on the server. You should consult
-	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occurred).
-	 * Read the README file delivered with the source code of this library for more
-	 * information.
-	 *
-	 * @param methodName A method name to call.
-	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
-	 */
-	public Object call(String methodName) throws XMLRPCException {
-		return call(methodName, null);
-	}
-
-	/**
-	 * Call a remote procedure on the server. The method must be described by
-	 * a method name. If the method requires parameters, this must be set.
-	 * The type of the return object depends on the server. You should consult
-	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occurred).
-	 * Read the README file delivered with the source code of this library for more
-	 * information.
-	 *
-	 * @param methodName A method name to call.
-	 * @param param1 The first parameter of the method.
-	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
-	 */
-	public Object call(String methodName, Object param1) throws XMLRPCException {
-		return call(methodName, new Object[]{param1});
-	}
-
-	/**
-	 * Call a remote procedure on the server. The method must be described by
-	 * a method name. If the method requires parameters, this must be set.
-	 * The type of the return object depends on the server. You should consult
-	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occurred).
-	 * Read the README file delivered with the source code of this library for more
-	 * information.
-	 *
-	 * @param methodName A method name to call.
-	 * @param param1 The first parameter of the method.
-	 * @param param2 The second parameter of the method.
-	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
-	 */
-	public Object call(String methodName, Object param1, Object param2) throws XMLRPCException {
-		return call(methodName, new Object[]{param1,param2});
-	}
-
-	/**
-	 * Call a remote procedure on the server. The method must be described by
-	 * a method name. If the method requires parameters, this must be set.
-	 * The type of the return object depends on the server. You should consult
-	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occurred).
-	 * Read the README file delivered with the source code of this library for more
-	 * information.
-	 *
-	 * @param methodName A method name to call.
-	 * @param param1 The first parameter of the method.
-	 * @param param2 The second parameter of the method.
-	 * @param param3 The third parameter of the method.
-	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
-	 */
-	public Object call(String methodName, Object param1, Object param2, Object param3)
-			throws XMLRPCException {
-		return call(methodName, new Object[]{param1,param2,param3});
-	}
-
-	/**
-	 * Call a remote procedure on the server. The method must be described by
-	 * a method name. If the method requires parameters, this must be set.
-	 * The type of the return object depends on the server. You should consult
-	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occurred).
-	 * Read the README file delivered with the source code of this library for more
-	 * information.
-	 *
-	 * @param methodName A method name to call.
-	 * @param param1 The first parameter of the method.
-	 * @param param2 The second parameter of the method.
-	 * @param param3 The third parameter of the method.
-	 * @param param4 The fourth parameter of the method.
-	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
-	 */
-	public Object call(String methodName, Object param1, Object param2, Object param3,
-			Object param4) throws XMLRPCException {
-		return call(methodName, new Object[]{param1,param2,param3,param4});
-	}
-
 
 	/**
 	 * Asynchronously call a remote procedure on the server. The method must be
@@ -369,117 +271,14 @@ public class XMLRPCClient {
 	 * @param params An array of parameters for the method.
 	 * @return The id of the current request.
 	 */
-	public long callAsync(XMLRPCCallback listener, String methodName, Object[] params) {
+	public long callAsync(XMLRPCCallback listener, String methodName, Object... params) {
 		long id = System.currentTimeMillis();
 		new Caller(listener, id, methodName, params).start();
 		return id;
 	}
 
 	/**
-	 * Asynchronously call a remote procedure on the server. The method must be
-	 * described by a method  name. This call is only for methods that doesn't require
-	 * any parameters. When the server returns a response the onResponse method is called
-	 * on the listener. If the server returns an error the onServerError method
-	 * is called on the listener. The onError method is called whenever something
-	 * fails. This method returns immediately and returns an identifier for the
-	 * request. All listener methods get this id as a parameter to distinguish between
-	 * multiple requests.
-	 *
-	 * @param listener A listener, which will be notified about the server response or errors.
-	 * @param methodName A method name to call on the server.
-	 * @return The id of the current request.
-	 */
-	public long callAsync(XMLRPCCallback listener, String methodName) {
-		return callAsync(listener, methodName, null);
-	}
-
-	/**
-	 * Asynchronously call a remote procedure on the server. The method must be
-	 * described by a method  name. If the method requires parameters, this must
-	 * be set. When the server returns a response the onResponse method is called
-	 * on the listener. If the server returns an error the onServerError method
-	 * is called on the listener. The onError method is called whenever something
-	 * fails. This method returns immediately and returns an identifier for the
-	 * request. All listener methods get this id as a parameter to distinguish between
-	 * multiple requests.
-	 *
-	 * @param listener A listener, which will be notified about the server response or errors.
-	 * @param methodName A method name to call on the server.
-	 * @param param1 The first parameter of the method.
-	 * @return The id of the current request.
-	 */
-	public long callAsync(XMLRPCCallback listener, String methodName, Object param1) {
-		return callAsync(listener, methodName, new Object[]{param1});
-	}
-
-	/**
-	 * Asynchronously call a remote procedure on the server. The method must be
-	 * described by a method  name. If the method requires parameters, this must
-	 * be set. When the server returns a response the onResponse method is called
-	 * on the listener. If the server returns an error the onServerError method
-	 * is called on the listener. The onError method is called whenever something
-	 * fails. This method returns immediately and returns an identifier for the
-	 * request. All listener methods get this id as a parameter to distinguish between
-	 * multiple requests.
-	 *
-	 * @param listener A listener, which will be notified about the server response or errors.
-	 * @param methodName A method name to call on the server.
-	 * @param param1 The first parameter of the method.
-	 * @param param2 The second parameter of the method.
-	 * @return The id of the current request.
-	 */
-	public long callAsync(XMLRPCCallback listener, String methodName, Object param1,
-			Object param2) {
-		return callAsync(listener, methodName, new Object[]{param1,param2});
-	}
-
-	/**
-	 * Asynchronously call a remote procedure on the server. The method must be
-	 * described by a method  name. If the method requires parameters, this must
-	 * be set. When the server returns a response the onResponse method is called
-	 * on the listener. If the server returns an error the onServerError method
-	 * is called on the listener. The onError method is called whenever something
-	 * fails. This method returns immediately and returns an identifier for the
-	 * request. All listener methods get this id as a parameter to distinguish between
-	 * multiple requests.
-	 *
-	 * @param listener A listener, which will be notified about the server response or errors.
-	 * @param methodName A method name to call on the server.
-	 * @param param1 The first parameter of the method.
-	 * @param param2 The second parameter of the method.
-	 * @param param3 The third parameter of the method.
-	 * @return The id of the current request.
-	 */
-	public long callAsync(XMLRPCCallback listener, String methodName, Object param1,
-			Object param2, Object param3) {
-		return callAsync(listener, methodName, new Object[]{param1,param2,param3});
-	}
-
-	/**
-	 * Asynchronously call a remote procedure on the server. The method must be
-	 * described by a method  name. If the method requires parameters, this must
-	 * be set. When the server returns a response the onResponse method is called
-	 * on the listener. If the server returns an error the onServerError method
-	 * is called on the listener. The onError method is called whenever something
-	 * fails. This method returns immediately and returns an identifier for the
-	 * request. All listener methods get this id as a parameter to distinguish between
-	 * multiple requests.
-	 *
-	 * @param listener A listener, which will be notified about the server response or errors.
-	 * @param methodName A method name to call on the server.
-	 * @param param1 The first parameter of the method.
-	 * @param param2 The second parameter of the method.
-	 * @param param3 The third parameter of the method.
-	 * @param param4 The fourth parameter of the method.
-	 * @return The id of the current request.
-	 */
-	public long callAsync(XMLRPCCallback listener, String methodName, Object param1,
-			Object param2, Object param3, Object param4) {
-		return callAsync(listener, methodName, new Object[]{param1,param2,param3,param4});
-	}
-
-	/**
-	 * Cancel a specific asynchron call.
+	 * Cancel a specific asynchronous call.
 	 * 
 	 * @param id The id of the call as returned by the callAsync method.
 	 */
