@@ -51,17 +51,22 @@ public class XmlElement {
 	 */
 	@Override
 	public String toString() {
+		StringBuilder builder = new StringBuilder();
 		if(content != null && content.length() > 0) {
-			return "\n<" + name + ">" + content + "</" + name + ">\n";
+			builder.append("\n<").append(name).append(">")
+					.append(content)
+					.append("</").append(name).append(">\n");
+			return builder.toString();
 		} else if(children.size() > 0) {
-			String str = "\n<" + name + ">";
+			builder.append("\n<").append(name).append(">");
 			for(XmlElement x : children) {
-				str += x.toString();
+				builder.append(x.toString());
 			}
-			str += "</" + name + ">\n";
-			return str;
+			builder.append("</").append(name).append(">\n");
+			return builder.toString();
 		} else {
-			return "\n<" + name + "/>\n" ;
+			builder.append("\n<").append(name).append("/>\n");
+			return builder.toString();
 		}
 	}
 
