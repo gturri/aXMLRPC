@@ -8,8 +8,12 @@ import java.net.HttpURLConnection;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
+import javax.net.ssl.*;
 
 /**
  * An XMLRPCClient is a client used to make XML-RPC (Extensible Markup Language
@@ -17,7 +21,7 @@ import java.util.Map;
  * The specification of XMLRPC can be found at http://www.xmlrpc.com/spec.
  * You can use flags to extend the functionality of the client to some extras.
  * Further information on the flags can be found in the documentation of these.
- * For a documentation on how to use this class see also the readme file delivered
+ * For a documentation on how to use this class see also the README file delivered
  * with the source of this library.
  *
  * @author Tim Roes
@@ -99,6 +103,22 @@ public class XMLRPCClient {
 	 * been set, the client will throw an exception on these HTTP status codes.
 	 */
 	public static final int FLAGS_FORWARD = 0x20;
+	
+	/**
+	 * With this flag enabled, the client will ignore, if the URL doesn't match
+	 * the SSL Certificate. This should be used with caution. Normally the URL
+	 * should always match the URL in the SSL certificate, even with self signed
+	 * certificates.
+	 */
+	public static final int FLAGS_SSL_IGNORE_INVALID_HOST = 0x40;
+	
+	/**
+	 * With this flag enabled, the client will ignore all unverified SSL/TLS 
+	 * certificates. This must be used, if you use self-signed certificates
+	 * or certificated from unknown (or untrusted) authorities.
+	 */
+	public static final int FLAGS_SSL_IGNORE_INVALID_CERT = 0x80;
+	
 
 	private int flags;
 
@@ -110,12 +130,14 @@ public class XMLRPCClient {
 	private ResponseParser responseParser;
 	private CookieManager cookieManager;
 	private AuthenticationManager authManager;
+	
+	private TrustManager[] trustAllManagers;
 
 	/**
-	 * Create a new XMLRPC client for the given url.
+	 * Create a new XMLRPC client for the given URL.
 	 *
-	 * @param url The url to send the requests to.
-	 * @param userAgent A user agent string to use in the http requests.
+	 * @param url The URL to send the requests to.
+	 * @param userAgent A user agent string to use in the HTTP requests.
 	 * @param flags A combination of flags to be set.
 	 */
 	public XMLRPCClient(URL url, String userAgent, int flags) {
@@ -137,10 +159,10 @@ public class XMLRPCClient {
 	}
 
 	/**
-	 * Create a new XMLRPC client for the given url.
+	 * Create a new XMLRPC client for the given URL.
 	 * The default user agent string will be used.
 	 *
-	 * @param url The url to send the requests to.
+	 * @param url The URL to send the requests to.
 	 * @param flags A combination of flags to be set.
 	 */
 	public XMLRPCClient(URL url, int flags) {
@@ -181,7 +203,7 @@ public class XMLRPCClient {
 	}
 
 	/**
-	 * Set a http header field to a custom value.
+	 * Set a HTTP header field to a custom value.
 	 * You cannot modify the Host or Content-Type field that way.
 	 * If the field already exists, the old value is overwritten.
 	 *
@@ -221,14 +243,14 @@ public class XMLRPCClient {
 	 * a method name. If the method requires parameters, this must be set.
 	 * The type of the return object depends on the server. You should consult
 	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occured).
-	 * Read the readme file delivered with the source code of this library for more
+	 * This method will block until the server returned a result (or an error occurred).
+	 * Read the README file delivered with the source code of this library for more
 	 * information.
 	 *
 	 * @param method A method name to call.
 	 * @param params An array of parameters for the method.
 	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occured during the call.
+	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 	 */
 	public Object call(String method, Object[] params) throws XMLRPCException {
 		return new Caller().call(method, params);
@@ -239,13 +261,13 @@ public class XMLRPCClient {
 	 * a method name. This method is only for methods that doesn't require any parameters.
 	 * The type of the return object depends on the server. You should consult
 	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occured).
-	 * Read the readme file delivered with the source code of this library for more
+	 * This method will block until the server returned a result (or an error occurred).
+	 * Read the README file delivered with the source code of this library for more
 	 * information.
 	 *
 	 * @param methodName A method name to call.
 	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occured during the call.
+	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 	 */
 	public Object call(String methodName) throws XMLRPCException {
 		return call(methodName, null);
@@ -256,14 +278,14 @@ public class XMLRPCClient {
 	 * a method name. If the method requires parameters, this must be set.
 	 * The type of the return object depends on the server. You should consult
 	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occured).
-	 * Read the readme file delivered with the source code of this library for more
+	 * This method will block until the server returned a result (or an error occurred).
+	 * Read the README file delivered with the source code of this library for more
 	 * information.
 	 *
 	 * @param methodName A method name to call.
 	 * @param param1 The first parameter of the method.
 	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occured during the call.
+	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 	 */
 	public Object call(String methodName, Object param1) throws XMLRPCException {
 		return call(methodName, new Object[]{param1});
@@ -274,15 +296,15 @@ public class XMLRPCClient {
 	 * a method name. If the method requires parameters, this must be set.
 	 * The type of the return object depends on the server. You should consult
 	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occured).
-	 * Read the readme file delivered with the source code of this library for more
+	 * This method will block until the server returned a result (or an error occurred).
+	 * Read the README file delivered with the source code of this library for more
 	 * information.
 	 *
 	 * @param methodName A method name to call.
 	 * @param param1 The first parameter of the method.
 	 * @param param2 The second parameter of the method.
 	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occured during the call.
+	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 	 */
 	public Object call(String methodName, Object param1, Object param2) throws XMLRPCException {
 		return call(methodName, new Object[]{param1,param2});
@@ -293,8 +315,8 @@ public class XMLRPCClient {
 	 * a method name. If the method requires parameters, this must be set.
 	 * The type of the return object depends on the server. You should consult
 	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occured).
-	 * Read the readme file delivered with the source code of this library for more
+	 * This method will block until the server returned a result (or an error occurred).
+	 * Read the README file delivered with the source code of this library for more
 	 * information.
 	 *
 	 * @param methodName A method name to call.
@@ -302,7 +324,7 @@ public class XMLRPCClient {
 	 * @param param2 The second parameter of the method.
 	 * @param param3 The third parameter of the method.
 	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occured during the call.
+	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 	 */
 	public Object call(String methodName, Object param1, Object param2, Object param3)
 			throws XMLRPCException {
@@ -314,8 +336,8 @@ public class XMLRPCClient {
 	 * a method name. If the method requires parameters, this must be set.
 	 * The type of the return object depends on the server. You should consult
 	 * the server documentation and then cast the return value according to that.
-	 * This method will block until the server returned a result (or an error occured).
-	 * Read the readme file delivered with the source code of this library for more
+	 * This method will block until the server returned a result (or an error occurred).
+	 * Read the README file delivered with the source code of this library for more
 	 * information.
 	 *
 	 * @param methodName A method name to call.
@@ -324,7 +346,7 @@ public class XMLRPCClient {
 	 * @param param3 The third parameter of the method.
 	 * @param param4 The fourth parameter of the method.
 	 * @return The result of the server.
-	 * @throws XMLRPCException Will be thrown if an error occured during the call.
+	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 	 */
 	public Object call(String methodName, Object param1, Object param2, Object param3,
 			Object param4) throws XMLRPCException {
@@ -587,14 +609,14 @@ public class XMLRPCClient {
 		 * a method name. If the method requires parameters, this must be set.
 		 * The type of the return object depends on the server. You should consult
 		 * the server documentation and then cast the return value according to that.
-		 * This method will block until the server returned a result (or an error occured).
-		 * Read the readme file delivered with the source code of this library for more
+		 * This method will block until the server returned a result (or an error occurred).
+		 * Read the README file delivered with the source code of this library for more
 		 * information.
 		 *
 		 * @param method A method name to call.
 		 * @param params An array of parameters for the method.
 		 * @return The result of the server.
-		 * @throws XMLRPCException Will be thrown if an error occured during the call.
+		 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 		 */
 		public Object call(String methodName, Object[] params) throws XMLRPCException {
 			
@@ -603,11 +625,8 @@ public class XMLRPCClient {
 				Call c = createCall(methodName, params);
 
 				URLConnection conn = url.openConnection();
-				if(!(conn instanceof HttpURLConnection)) {
-					throw new IllegalArgumentException("The URL is not for a http connection.");
-				}
 
-				http = (HttpURLConnection)conn;
+				http = verifyConnection(conn);
 				http.setInstanceFollowRedirects(false);
 				http.setRequestMethod(HTTP_POST);
 				http.setDoOutput(true);
@@ -690,6 +709,78 @@ public class XMLRPCClient {
 			} catch (IOException ex) {
 				throw new XMLRPCException(ex);
 			} 
+
+		}
+		
+		/**
+		 * Verifies the given URLConnection to be a valid HTTP or HTTPS connection.
+		 * If the SSL ignoring flags are set, the method will ignore SSL warnings. 
+		 * 
+		 * @param conn The URLConnection to validate.
+		 * @return The verified HttpURLConnection.
+		 * @throws XMLRPCException Will be thrown if an error occurred.
+		 */
+		private HttpURLConnection verifyConnection(URLConnection conn) throws XMLRPCException {
+			
+				if(!(conn instanceof HttpURLConnection)) {
+					throw new IllegalArgumentException("The URL is not valid for a http connection.");
+				}
+
+				// Validate the connection if its an SSL connection
+				if(conn instanceof HttpsURLConnection) {
+					
+					HttpsURLConnection h = (HttpsURLConnection)conn;
+					
+					// Don't check, that URL matches the certificate.
+					if(isFlagSet(FLAGS_SSL_IGNORE_INVALID_HOST)) {
+						h.setHostnameVerifier(new HostnameVerifier() {
+							public boolean verify(String host, SSLSession ssl) {
+								return true;
+							}
+						});
+					}
+					
+					// Don't validate the certificate if flag is set.
+					if(isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
+					
+						// Initialize tolerant TrustManager
+						if(trustAllManagers == null) {
+							trustAllManagers = new TrustManager[] { new X509TrustManager() {
+
+								public void checkClientTrusted(X509Certificate[] xcs, String string) 
+										throws CertificateException { }
+
+								public void checkServerTrusted(X509Certificate[] xcs, String string) 
+										throws CertificateException { }
+
+								public X509Certificate[] getAcceptedIssuers() {
+									return null;
+								}
+							}};
+						}
+						
+						// Associate the TrustManager with TLS and SSL connections.
+						try {
+							
+							String[] sslContexts = new String[]{ "TLS", "SSL" };
+						
+							for(String ctx : sslContexts) {
+								SSLContext sc = SSLContext.getInstance(ctx);
+								sc.init(null, trustAllManagers, new SecureRandom());
+								h.setSSLSocketFactory(sc.getSocketFactory());
+							}
+							
+						} catch(Exception ex) {
+							throw new XMLRPCException(ex);
+						}
+						
+					}
+					
+					return h;
+					
+				}
+
+				return (HttpURLConnection)conn;
 
 		}
 

@@ -163,11 +163,28 @@ code of the response from the server. According to specification the
 status code must be 200. This flag is only needed for the use with 
 not standard compliant servers.
 
+
 #### FLAGS_FORWARD
 
 With this flag enabled, the client will forward the request, if
 the 301 or 302 HTTP status code has been received. If this flag is not
 set, the client will throw an exception on these HTTP status codes.
+
+
+#### FLAGS_SSL_IGNORE_INVALID_HOST
+
+With this flag enabled, the client will ignore, if the URL doesn't match
+the SSL Certificate. This should be used with caution. Normally the URL
+should always match the URL in the SSL certificate, even with self signed
+certificates.
+
+
+#### FLAGS_SSL_INGORE_INVALID_CERT
+
+With this flag enabled, the client will ignore all unverified SSL/TLS 
+certificates. This must be used, if you use self-signed certificates
+or certificated from unknown (or untrusted) authorities.
+
 
 License
 =======
