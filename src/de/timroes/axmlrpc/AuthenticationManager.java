@@ -14,6 +14,15 @@ public class AuthenticationManager {
 	private String pass;
 
 	/**
+	 * Clear the username and password. No basic HTTP authentication will be used
+	 * in the next calls.
+	 */
+	public void clearAuthData() {
+		this.user = null;
+		this.pass = null;
+	}
+	
+	/**
 	 * Set the username and password that should be used to perform basic
 	 * http authentication.
 	 * 

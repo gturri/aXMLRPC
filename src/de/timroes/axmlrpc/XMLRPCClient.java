@@ -228,6 +228,14 @@ public class XMLRPCClient {
 	public void setLoginData(String user, String pass) {
 		authManager.setAuthData(user, pass);
 	}
+
+	/**
+	 * Clear the username and password. No basic HTTP authentication will be used
+	 * in the next calls.
+	 */
+	public void clearLoginData() {
+		authManager.clearAuthData();
+	}
 	
 	/**
 	 * Delete all cookies currently used by the client.
