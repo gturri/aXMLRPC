@@ -96,7 +96,7 @@ public class StructSerializer implements Serializer {
 				entry = new XmlElement(STRUCT_MEMBER);
 				name = new XmlElement(STRUCT_NAME);
 				value = new XmlElement(STRUCT_VALUE);
-				name.addChildren(SerializerHandler.getDefault().serialize(member.getKey()));
+				name.setContent(member.getKey());
 				value.addChildren(SerializerHandler.getDefault().serialize(member.getValue()));
 				entry.addChildren(name);
 				entry.addChildren(value);
