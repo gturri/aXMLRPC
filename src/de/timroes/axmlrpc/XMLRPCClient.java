@@ -39,8 +39,6 @@ public class XMLRPCClient {
 	static final String HOST = "Host";
 	static final String CONTENT_LENGTH = "Content-Length";
 	static final String HTTP_POST = "POST";
-	static final int HTTP_MOVED_PERMANENTLY = 301;
-	static final int HTTP_FOUND = 302;
 
 	/**
 	 * XML elements to be used.
@@ -94,6 +92,9 @@ public class XMLRPCClient {
 	 * code of the response from the server. According to specification the
 	 * status code must be 200. This flag is only needed for the use with 
 	 * not standard compliant servers.
+	 * 40X return codes won't be ignored, and will still lead to an exception. 
+	 * In case of 401 and 403 a XMLRPCAuthorizationException will be thrown 
+	 * (also without this flag).
 	 */
 	public static final int FLAGS_IGNORE_STATUSCODE = 0x10;
 	
@@ -452,14 +453,33 @@ public class XMLRPCClient {
 				stream.flush();
 				stream.close();
 
+				// Try to get the status code from the connection
+				int statusCode;
+				try {
+					statusCode = http.getResponseCode();
+				} catch(IOException ex) {
+					// Due to a bug on android, the getResponseCode()-method will
+					// fail the first time, with a IOException, when 401 or 403 has been returned.
+					// The second time it should success. If it fail the second time again
+					// the normal exceptipon handling can take care of this, since 
+					// it is a real error.
+					statusCode = http.getResponseCode();
+				}
+
+				// If status code was 401 or 403, throw an XMLRPCAuthorizationException
+				if(statusCode == HttpURLConnection.HTTP_FORBIDDEN
+						|| statusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+					throw new XMLRPCAuthorizationException(statusCode);
+				}
+
 				InputStream istream = http.getInputStream();
 				
 				// If status code is 301 Moved Permanently or 302 Found ...
-				if(http.getResponseCode() == HTTP_MOVED_PERMANENTLY 
-						|| http.getResponseCode() == HTTP_FOUND) {
+				if(statusCode == HttpURLConnection.HTTP_MOVED_PERM
+						|| statusCode == HttpURLConnection.HTTP_MOVED_TEMP) {
 					// ... do either a foward
 					if(isFlagSet(FLAGS_FORWARD)) {
-						boolean temporaryForward = http.getResponseCode() == HTTP_FOUND;
+						boolean temporaryForward = (statusCode == HttpURLConnection.HTTP_MOVED_TEMP);
 						
 						// Get new location from header field.
 						String newLocation = http.getHeaderField("Location");
@@ -489,7 +509,7 @@ public class XMLRPCClient {
 				}
 
 				if(!isFlagSet(FLAGS_IGNORE_STATUSCODE)
-					&& http.getResponseCode() != HttpURLConnection.HTTP_OK) {
+					&& statusCode != HttpURLConnection.HTTP_OK) {
 					throw new XMLRPCException("The status code of the http response must be 200.");
 				}
 
