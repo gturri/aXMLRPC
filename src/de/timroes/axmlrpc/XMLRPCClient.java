@@ -92,9 +92,6 @@ public class XMLRPCClient {
 	 * code of the response from the server. According to specification the
 	 * status code must be 200. This flag is only needed for the use with 
 	 * not standard compliant servers.
-	 * 40X return codes won't be ignored, and will still lead to an exception. 
-	 * In case of 401 and 403 a XMLRPCAuthorizationException will be thrown 
-	 * (also without this flag).
 	 */
 	public static final int FLAGS_IGNORE_STATUSCODE = 0x10;
 	
@@ -466,14 +463,26 @@ public class XMLRPCClient {
 					statusCode = http.getResponseCode();
 				}
 
-				// If status code was 401 or 403, throw an XMLRPCAuthorizationException
+				InputStream istream;
+				
+				// If status code was 401 or 403 throw exception or if appropriate 
+				// flag is set, ignore error code.
 				if(statusCode == HttpURLConnection.HTTP_FORBIDDEN
 						|| statusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-					throw new XMLRPCAuthorizationException(statusCode);
+
+					if(isFlagSet(FLAGS_IGNORE_STATUSCODE)) {
+						// getInputStream will fail if server returned above
+						// error code, use getErrorStream instead
+						istream = http.getErrorStream();
+					} else {
+						throw new XMLRPCException("Invalid status code '" 
+								+ statusCode + "' returned from server.");
+					}
+
+				} else {
+					istream = http.getInputStream();
 				}
 
-				InputStream istream = http.getInputStream();
-				
 				// If status code is 301 Moved Permanently or 302 Found ...
 				if(statusCode == HttpURLConnection.HTTP_MOVED_PERM
 						|| statusCode == HttpURLConnection.HTTP_MOVED_TEMP) {

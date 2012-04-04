@@ -161,9 +161,6 @@ With this flag enabled, the XML-RPC client will ignore the HTTP status
 code of the response from the server. According to specification the
 status code must be 200. This flag is only needed for the use with 
 not standard compliant servers.
-40X return codes won't be ignored, and will still lead to an exception. 
-In case of 401 and 403 a XMLRPCAuthorizationException will be thrown 
-(also without this flag).
 
 
 #### FLAGS_FORWARD
