@@ -185,6 +185,12 @@ certificates. This must be used, if you use self-signed certificates
 or certificated from unknown (or untrusted) authorities.
 
 
+#### FLAGS_SSL_IGNORE_ERRORS
+
+This flag disables all SSL warnings. It is an alternative to use
+FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST. There
+is no functional difference.
+
 License
 =======
 

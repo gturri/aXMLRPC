@@ -117,6 +117,13 @@ public class XMLRPCClient {
 	 */
 	public static final int FLAGS_SSL_IGNORE_INVALID_CERT = 0x80;
 	
+	/**
+	 * This flag disables all SSL warnings. It is an alternative to use
+	 * FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST. There
+	 * is no functional difference.
+	 */
+	public static final int FLAGS_SSL_IGNORE_ERRORS = 
+			FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST;
 
 	private int flags;
 
@@ -187,6 +194,17 @@ public class XMLRPCClient {
 	 */
 	public XMLRPCClient(URL url) {
 		this(url, DEFAULT_USER_AGENT, FLAGS_NONE);
+	}
+
+	/**
+	 * Returns the URL this XMLRPCClient is connected to. If that URL permanently forwards
+	 * to another URL, this method will return the forwarded URL, as soon as
+	 * the first call has been made.
+	 * 
+	 * @return Returns the URL for this XMLRPCClient.
+	 */
+	public URL getURL() {
+		return url;
 	}
 
 	/**
