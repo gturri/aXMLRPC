@@ -551,7 +551,7 @@ public class XMLRPCClient {
 
 				return responseParser.parse(istream);
 
-			} catch(SocketException ex) {
+			} catch (IOException ex) {
 				// If the thread has been canceled this exception will be thrown.
 				// So only throw an exception if the thread hasnt been canceled
 				// or if the thred has not been started in background.
@@ -560,8 +560,6 @@ public class XMLRPCClient {
 				} else {
 					throw new CancelException();
 				}
-			} catch (IOException ex) {
-				throw new XMLRPCException(ex);
 			} 
 
 		}
