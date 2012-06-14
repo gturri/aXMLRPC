@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
@@ -46,7 +45,7 @@ public class XMLRPCClient {
 	static final String METHOD_RESPONSE = "methodResponse";
 	static final String PARAMS = "params";
 	static final String PARAM = "param";
-	static final String VALUE = "value";
+	public static final String VALUE = "value";
 	static final String FAULT = "fault";
 	static final String METHOD_CALL = "methodCall";
 	static final String METHOD_NAME = "methodName";

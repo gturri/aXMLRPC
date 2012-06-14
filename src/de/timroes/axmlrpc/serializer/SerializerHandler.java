@@ -3,6 +3,7 @@ package de.timroes.axmlrpc.serializer;
 import de.timroes.axmlrpc.XMLRPCClient;
 import de.timroes.axmlrpc.XMLRPCException;
 import de.timroes.axmlrpc.XMLRPCRuntimeException;
+import de.timroes.axmlrpc.XMLUtil;
 import de.timroes.axmlrpc.xmlcreator.XmlElement;
 import java.util.Calendar;
 import java.util.Date;
@@ -83,9 +84,8 @@ public class SerializerHandler {
 
 	/**
 	 * Deserializes an incoming xml element to an java object.
-	 * The xml element must be the type element, that is nested within a value
-	 * tag of the server response. The type of the returning object depends on
-	 * the type tag.
+	 * The xml element must be the value element around the type element.
+	 * The type of the returning object depends on the type tag.
 	 *
 	 * @param element An type element from within a value tag.
 	 * @return The deserialized object.
@@ -93,6 +93,13 @@ public class SerializerHandler {
 	 */
 	public Object deserialize(Element element) throws XMLRPCException {
 
+		if(!XMLRPCClient.VALUE.equals(element.getNodeName())) {
+			throw new XMLRPCException("Value tag is missing around value.");
+		}
+		
+		// Grep type element from inside value element
+		element = XMLUtil.getOnlyChildElement(element.getChildNodes());
+		
 		Serializer s = null;
 
 		String type = element.getNodeName();

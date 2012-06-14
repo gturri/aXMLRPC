@@ -1,5 +1,6 @@
 package de.timroes.axmlrpc.serializer;
 
+import de.timroes.axmlrpc.XMLRPCClient;
 import de.timroes.axmlrpc.XMLRPCException;
 import de.timroes.axmlrpc.XMLRPCRuntimeException;
 import de.timroes.axmlrpc.XMLUtil;
@@ -29,25 +30,22 @@ public class ArraySerializer implements Serializer {
 		}
 
 		// Deserialize every array element
-		Element value;
+		Node value;
 		for(int i = 0; i < data.getChildNodes().getLength(); i++) {
 
-			value = XMLUtil.getOnlyChildElement(data.getChildNodes().item(i).getChildNodes());
+			value = data.getChildNodes().item(i);
 
-			if(value == null)
-				continue;
-			
 			// Strip only whitespace text elements and comments
-			if((value.getNodeType() == Node.TEXT_NODE
+			if(value == null || (value.getNodeType() == Node.TEXT_NODE
 						&& value.getNodeValue().trim().length() <= 0)
 					|| value.getNodeType() == Node.COMMENT_NODE)
 				continue;
 
 			if(value.getNodeType() != Node.ELEMENT_NODE) {
-				throw new XMLRPCException("An array can only contain value tags.");
+				throw new XMLRPCException("Wrong element inside of array.");
 			}
 
-			list.add(SerializerHandler.getDefault().deserialize(value));
+			list.add(SerializerHandler.getDefault().deserialize((Element)value));
 
 		}
 

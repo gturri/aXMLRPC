@@ -88,12 +88,6 @@ class ResponseParser {
 
 		element = XMLUtil.getOnlyChildElement(element.getChildNodes());
 
-		if(!element.getNodeName().equals(XMLRPCClient.VALUE)) {
-			throw new XMLRPCException("The param tag must contain a value tag.");
-		}
-
-		element = XMLUtil.getOnlyChildElement(element.getChildNodes());
-
 		return SerializerHandler.getDefault().deserialize(element);
 
 	}

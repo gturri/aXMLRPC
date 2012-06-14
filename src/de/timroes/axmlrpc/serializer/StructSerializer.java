@@ -58,12 +58,11 @@ public class StructSerializer implements Serializer {
 					} else {
 						s = XMLUtil.getOnlyTextContent(m.getChildNodes());
 					}
-				} else if(STRUCT_VALUE.equals(m.getNodeName())) {
+				} else if(m.getNodeType() == Node.ELEMENT_NODE && STRUCT_VALUE.equals(m.getNodeName())) {
 					if(o != null) {
 						throw new XMLRPCException("Value of a struct member cannot be set twice.");
 					} else {
-						o = SerializerHandler.getDefault().deserialize(
-								XMLUtil.getOnlyChildElement(m.getChildNodes()));
+						o = SerializerHandler.getDefault().deserialize((Element)m);
 					}
 				} else {
 					throw new XMLRPCException("A struct member must only contain one name and one value.");
