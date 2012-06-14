@@ -122,6 +122,12 @@ public class XMLRPCClient {
 	 * will still be generated according to specification.
 	 */
 	public static final int FLAGS_DEFAULT_TYPE_STRING = 0x100;
+
+	/**
+	 * With this flag enabled, the {@link XMLRPCClient} ignores all namespaces
+	 * used within the response from the server.
+	 */
+	public static final int FLAGS_IGNORE_NAMESPACES = 0x200;
 	
 	/**
 	 * This flag disables all SSL warnings. It is an alternative to use

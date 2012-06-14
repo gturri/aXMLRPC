@@ -111,7 +111,14 @@ public class SerializerHandler {
 
 		Serializer s = null;
 
-		String type = element.getNodeName();
+		String type;
+
+		// If FLAGS_IGNORE_NAMESPACE has been set, only use local name.
+		if((flags & XMLRPCClient.FLAGS_IGNORE_NAMESPACES) != 0) {
+			type = element.getLocalName() == null ? element.getNodeName() : element.getLocalName();
+		} else {
+			type = element.getNodeName();
+		}
 
 		if((flags & XMLRPCClient.FLAGS_NIL) != 0 && TYPE_NULL.equals(type)) {
 			s = nil;

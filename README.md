@@ -192,6 +192,12 @@ as a string element. This is just for incoming messages. Outgoing messages
 will still be generated according to specification.
 
 
+#### FLAGS_IGNORE_NAMESPACES
+With this flag enabled, the client ignores all namespaces
+used within the response from the server.
+
+
+
 Meta Flags
 ----------
 

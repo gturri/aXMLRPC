@@ -32,6 +32,7 @@ class ResponseParser {
 		try {
 
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setNamespaceAware(true);
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document dom = builder.parse(response);
 			Element e = dom.getDocumentElement();
