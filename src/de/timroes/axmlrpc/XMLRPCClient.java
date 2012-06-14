@@ -137,6 +137,16 @@ public class XMLRPCClient {
 	public static final int FLAGS_SSL_IGNORE_ERRORS = 
 			FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST;
 
+	/**
+	 * This flag should be used if the server is an apache ws xmlrpc server.
+	 * This will set some flags, so that the not standard conform behavior
+	 * of the server will be ignored.
+	 * This will enable the following flags: FLAGS_IGNORE_NAMESPACES, FLAGS_NIL,
+	 * FLAGS_DEFAULT_TYPE_STRING
+	 */
+	public static final int FLAGS_APACHE_WS = FLAGS_IGNORE_NAMESPACES | FLAGS_NIL
+			| FLAGS_DEFAULT_TYPE_STRING;
+
 	private int flags;
 
 	private URL url;

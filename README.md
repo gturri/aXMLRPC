@@ -213,6 +213,15 @@ This flag disables all SSL warnings. It is an alternative to use
 FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST.
 
 
+#### FLAGS_APACHE_WS
+
+This flag should be used if the server is an apache ws xmlrpc server.
+This will set some flags, so that the not standard conform behavior
+of the server will be ignored.
+This will enable the following flags: FLAGS_IGNORE_NAMESPACES, FLAGS_NIL,
+FLAGS_DEFAULT_TYPE_STRING
+
+
 License
 =======
 
