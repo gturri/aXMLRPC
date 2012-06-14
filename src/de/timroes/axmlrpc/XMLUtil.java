@@ -1,9 +1,15 @@
 package de.timroes.axmlrpc;
 
-import de.timroes.axmlrpc.xmlcreator.XmlElement;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import de.timroes.axmlrpc.xmlcreator.XmlElement;
 
 /**
  * This class provides some utility methods for the use with the Java DOM parser.
@@ -30,12 +36,23 @@ public class XMLUtil {
 			n = list.item(i);
 			// Strip only whitespace text elements and comments
 			if((n.getNodeType() == Node.TEXT_NODE
-						&& n.getNodeValue().trim().length() <= 0)
+					&& n.getNodeValue().trim().length() <= 0)
 					|| n.getNodeType() == Node.COMMENT_NODE)
 				continue;
 
 			// Check if there is anything else than an element node.
-			if(n.getNodeType() != Node.ELEMENT_NODE) {
+			if (n.getNodeType() == Node.TEXT_NODE) {
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				try {
+					DocumentBuilder builder = factory.newDocumentBuilder();
+					Document document = builder.newDocument();
+					Element e1 = document.createElement("string");
+					e1.appendChild(document.createTextNode(n.getTextContent()));
+					n = e1;
+				} catch (ParserConfigurationException parserException) {
+					parserException.printStackTrace();
+				}
+			} else if(n.getNodeType() != Node.ELEMENT_NODE) {
 				throw new XMLRPCException("Only element nodes allowed.");
 			}
 
