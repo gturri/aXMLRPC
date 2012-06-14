@@ -99,8 +99,7 @@ public class SerializerHandler {
 		Serializer s = null;
 
 		String type = element.getNodeName();
-
-		if((flags & XMLRPCClient.FLAGS_NIL) != 0 || TYPE_NULL.equals(type) || TYPE_NULL1.equals(type)) {
+		if((flags & XMLRPCClient.FLAGS_NIL) != 0 && (TYPE_NULL.equals(type) || TYPE_NULL1.equals(type))) {
 			s = nil;
 		} else if(TYPE_STRING.equals(type)) {
 			s = string;
