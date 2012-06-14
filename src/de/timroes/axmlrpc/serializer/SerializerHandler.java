@@ -97,9 +97,18 @@ public class SerializerHandler {
 			throw new XMLRPCException("Value tag is missing around value.");
 		}
 		
+		if(!XMLUtil.hasChildElement(element.getChildNodes())) {
+			// Value element doesn't contain a child element
+			if((flags & XMLRPCClient.FLAGS_DEFAULT_TYPE_STRING) != 0) {
+				return string.deserialize(element);
+			} else {
+				throw new XMLRPCException("Missing type element inside of value element.");
+			}
+		}
+			
 		// Grep type element from inside value element
 		element = XMLUtil.getOnlyChildElement(element.getChildNodes());
-		
+
 		Serializer s = null;
 
 		String type = element.getNodeName();

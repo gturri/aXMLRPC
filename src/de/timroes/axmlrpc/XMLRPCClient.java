@@ -117,6 +117,13 @@ public class XMLRPCClient {
 	public static final int FLAGS_SSL_IGNORE_INVALID_CERT = 0x80;
 	
 	/**
+	 * With this flag enabled, a value with a missing type tag, will be parsed
+	 * as a string element. This is just for incoming messages. Outgoing messages
+	 * will still be generated according to specification.
+	 */
+	public static final int FLAGS_DEFAULT_TYPE_STRING = 0x100;
+	
+	/**
 	 * This flag disables all SSL warnings. It is an alternative to use
 	 * FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST. There
 	 * is no functional difference.

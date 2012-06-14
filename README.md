@@ -185,11 +185,27 @@ certificates. This must be used, if you use self-signed certificates
 or certificated from unknown (or untrusted) authorities.
 
 
+#### FLAGS_DEFAULT_TYPE_STRING
+
+With this flag enabled, a value with a missing type tag, will be parsed
+as a string element. This is just for incoming messages. Outgoing messages
+will still be generated according to specification.
+
+
+Meta Flags
+----------
+
+This can be used exactly the same as normal flags. But each meta flag is just a
+collection of different other flags. There is no functional difference in using
+a meta flag or all the containing flags. For detailed documentation on the single
+flags read the above section.
+
+
 #### FLAGS_SSL_IGNORE_ERRORS
 
 This flag disables all SSL warnings. It is an alternative to use
-FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST. There
-is no functional difference.
+FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST.
+
 
 License
 =======

@@ -87,6 +87,28 @@ public class XMLUtil {
 	}
 
 	/**
+	 * Checks if the given {@link NodeList} contains a child element.
+	 *
+	 * @param list The {@link NodeList} to check.
+	 * @return Whether the {@link NodeList} contains children.
+	 */
+	public static boolean hasChildElement(NodeList list) {
+		
+		Node n;
+
+		for(int i = 0; i < list.getLength(); i++) {
+			n = list.item(i);
+
+			if(n.getNodeType() == Node.ELEMENT_NODE) {
+				return true;
+			}
+		}
+
+		return false;
+		
+	}
+
+	/**
 	 * Creates an xml tag with a given type and content.
 	 *
 	 * @param type The type of the xml tag. What will be filled in the <..>.
