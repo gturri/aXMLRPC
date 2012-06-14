@@ -1,13 +1,15 @@
 package de.timroes.axmlrpc.serializer;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+
+import org.w3c.dom.Element;
+
 import de.timroes.axmlrpc.XMLRPCClient;
 import de.timroes.axmlrpc.XMLRPCException;
 import de.timroes.axmlrpc.XMLRPCRuntimeException;
 import de.timroes.axmlrpc.xmlcreator.XmlElement;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import org.w3c.dom.Element;
 
 /**
  * The serializer handler serializes and deserialized objects.
@@ -31,6 +33,7 @@ public class SerializerHandler {
 	public static final String TYPE_ARRAY = "array";
 	public static final String TYPE_BASE64 = "base64";
 	public static final String TYPE_NULL = "nil";
+	public static final String TYPE_NULL1 = "ex:nil";
 
 	private static SerializerHandler instance;
 
@@ -68,7 +71,7 @@ public class SerializerHandler {
 	private ArraySerializer array = new ArraySerializer();
 	private Base64Serializer base64 = new Base64Serializer();
 	private NullSerializer nil = new NullSerializer();
-	
+
 	private int flags;
 
 	/**
@@ -97,7 +100,7 @@ public class SerializerHandler {
 
 		String type = element.getNodeName();
 
-		if((flags & XMLRPCClient.FLAGS_NIL) != 0 && TYPE_NULL.equals(type)) {
+		if((flags & XMLRPCClient.FLAGS_NIL) != 0 || TYPE_NULL.equals(type) || TYPE_NULL1.equals(type)) {
 			s = nil;
 		} else if(TYPE_STRING.equals(type)) {
 			s = string;
