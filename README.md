@@ -61,6 +61,8 @@ an array and pass the array to the method, like in the following example:
 	client.call("someMethod", new Object[]{ o1, o2, o3 });
 	// ...
 
+#### Asynchronous Calls
+
 The above method calls are synchronous. So the method `call` will return when the server responded
 or an error occured. There is also a possibility for asynchronous server calls.
 You need to implement an XMLRPCCallback that will get noticed about the respone (or error) from
@@ -84,6 +86,14 @@ between the different request by their ids.
 	XMLRPCClient client = new XMLRPCClient(url);
 	long id = client.callAsync(listener, "add", 5, 10);
 
+
+You will be also able to cancel an asynchonous call. Just use the `cancel` method on the `XMLRPCClient` instance,
+like in the following example. The listener will not be notified, if the call is canceled.
+
+	XMLRPCClient client = new XMLRPCClient(url);
+	long id = client.callAsync(listener, "method", params);
+	// ...
+	client.cancel(id);
 
 The data types
 --------------
