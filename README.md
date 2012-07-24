@@ -30,6 +30,13 @@ The library itself is a NetBeans project and can be compiled either with NetBean
 with `ant`. The resulting JAR file can be used as a dependency in your project. If you
 use NetBeans you can make a dependency directly to the project.
 
+### Use Maven
+
+The library is also a valid Maven project. So you can use Maven to compile it.
+If you want to use it as a Maven project in NetBeans, you will have to delete
+the `nbproject` folder. Afterwards NetBeans will detect it as a Maven project (NetBeans
+restart required).
+
 ### Download the JAR library (not recommended)
 
 You can download a compiled jar file from the above Download tag and use it as a library
