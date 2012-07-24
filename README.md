@@ -37,6 +37,19 @@ If you want to use it as a Maven project in NetBeans, you will have to delete
 the `nbproject` folder. Afterwards NetBeans will detect it as a Maven project (NetBeans
 restart required).
 
+To use it on your Maven project, add it as a dependency on your pom.xml file:
+
+    <dependency>
+        <groupId>de.timroes</groupId>
+        <artifactId>aXMLRPC</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    
+and install it on your local Maven repository (since it's not available on the Maven repositories):
+
+    $ cd /path/to/aXMLRPC/
+    $ mvn clean install
+
 ### Download the JAR library (not recommended)
 
 You can download a compiled jar file from the above Download tag and use it as a library
