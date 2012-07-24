@@ -47,6 +47,7 @@ To use it on your Maven project, add it as a dependency on your pom.xml file:
     
 and install it on your local Maven repository (since it's not available on the Maven repositories):
 
+    $ cd /path/to/aXMLRPC/
     $ mvn clean install
 
 ### Download the JAR library (not recommended)
