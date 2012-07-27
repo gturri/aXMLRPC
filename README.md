@@ -42,10 +42,11 @@ To use it on your Maven project, add it as a dependency on your pom.xml file:
     <dependency>
         <groupId>de.timroes</groupId>
         <artifactId>aXMLRPC</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>X.Y.Z</version>
     </dependency>
     
-and install it on your local Maven repository (since it's not available on the Maven repositories):
+where X.Y.Z is the current aXMLRPC version and install it on your local Maven 
+repository (since it's not available on the Maven repositories):
 
     $ cd /path/to/aXMLRPC/
     $ mvn clean install
