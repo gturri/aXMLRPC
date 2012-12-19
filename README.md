@@ -56,6 +56,12 @@ repository (since it's not available on the Maven repositories):
 You can download a compiled jar file from the above Download tag and use it as a library
 for your project. This is not recommended, because you will not stay up to date to the sourcecode.
 
+
+**Attention:** Since GitHub stopped the support to upload binary files, I have to move everything to
+another service. The download page (https://github.com/timroes/aXMLRPC/downloads) will still be 
+available for some time, until GitHub shuts it down completely.
+
+
 How to use the library?
 =======================
 
