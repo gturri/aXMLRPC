@@ -51,15 +51,51 @@ repository (since it's not available on the Maven repositories):
     $ cd /path/to/aXMLRPC/
     $ mvn clean install
 
-### Download the JAR library (not recommended)
+### Download the JAR library
 
-You can download a compiled jar file from the above Download tag and use it as a library
-for your project. This is not recommended, because you will not stay up to date to the sourcecode.
+You can download a compiled jar file from the below list and use it as a library
+for your project.
 
+[aXMLRPC v1.4.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.4.0.jar)
 
-**Attention:** Since GitHub stopped the support to upload binary files, I have to move everything to
-another service. The download page (https://github.com/timroes/aXMLRPC/downloads) will still be 
-available for some time, until GitHub shuts it down completely.
+  * Added FLAGS_IGNORE_NAMESPACE, FLAGS_DEFAULT_TYPE_STRING
+
+[aXMLRPC v1.3.5](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.5.jar)
+
+  * Fixed bug in canceling async calls
+
+[aXMLRPC v1.3.4](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.4.jar)
+
+  * Added getURL-method
+  * Added FLAGS_IGNORE_SSL_ERRORS
+  * Removed debugging information from JAR
+
+[aXMLRPC v1.3.3](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.3.jar)
+
+  * Improved handling of 40X http errors
+
+[aXMLRPC v1.3.2](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.2.jar)
+
+  * Fixed handling of 40x http errors
+
+[aXMLRPC v1.3.1](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.1.jar)
+
+  * Fixed bug in XML struct creation
+  * Method to clear HTTP basic auth login data
+
+[aXMLRPC v1.3.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.0.jar)
+
+  * Flags to ignore SSL warnings
+  * HTTP forwarding
+  * Improved code quality
+
+**Real old versions:**
+
+  * [aXMLRPC v1.2.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.2.0.jar)
+  * [aXMLRPC v1.1.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.1.0.jar)
+  * [aXMLRPC v1.0.3](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.0.3.jar)
+  * [aXMLRPC v1.0.2](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.0.2.jar)
+  * [aXMLRPC v1.0.1](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.0.1.jar)
 
 
 How to use the library?
