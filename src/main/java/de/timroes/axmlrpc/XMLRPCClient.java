@@ -305,6 +305,18 @@ public class XMLRPCClient {
 	}
 	
 	/**
+	 * Returns a {@link Map} of all cookies. It contains each cookie key as a map
+	 * key and its value as a map value. Cookies will only be used if {@link #FLAGS_ENABLE_COOKIES}
+	 * has been set for the client. This map will also be available (and empty)
+	 * when this flag hasn't been said, but has no effect on the HTTP connection.
+	 * 
+	 * @return A {@code Map} of all cookies.
+	 */
+	public Map<String,String> getCookies() {
+		return cookieManager.getCookies();
+	}
+	
+	/**
 	 * Delete all cookies currently used by the client.
 	 * This method has only an effect, as long as the FLAGS_ENABLE_COOKIES has
 	 * been set on this client.
