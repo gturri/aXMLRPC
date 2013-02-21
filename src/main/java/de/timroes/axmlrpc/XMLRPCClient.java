@@ -4,14 +4,13 @@ import de.timroes.axmlrpc.serializer.SerializerHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import javax.net.ssl.*;
 
 /**
@@ -34,7 +33,7 @@ public class XMLRPCClient {
 	 */
 	static final String USER_AGENT = "User-Agent";
 	static final String CONTENT_TYPE = "Content-Type";
-	static final String TYPE_XML = "text/xml";
+	static final String TYPE_XML = "text/xml; charset=utf-8";
 	static final String HOST = "Host";
 	static final String CONTENT_LENGTH = "Content-Length";
 	static final String HTTP_POST = "POST";
@@ -130,6 +129,12 @@ public class XMLRPCClient {
 	public static final int FLAGS_IGNORE_NAMESPACES = 0x200;
 	
 	/**
+	 * With this flag enabled, the {@link XMLRPCClient} will use the system http
+	 * proxy to connect to the XML-RPC server.
+	 */
+	public static final int FLAGS_USE_SYSTEM_PROXY = 0x400;
+	
+	/**
 	 * This flag disables all SSL warnings. It is an alternative to use
 	 * FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST. There
 	 * is no functional difference.
@@ -159,6 +164,8 @@ public class XMLRPCClient {
 	private AuthenticationManager authManager;
 	
 	private TrustManager[] trustAllManagers;
+	
+	private Proxy proxy;
 
 	/**
 	 * Create a new XMLRPC client for the given URL.
@@ -182,6 +189,16 @@ public class XMLRPCClient {
 
 		httpParameters.put(CONTENT_TYPE, TYPE_XML);
 		httpParameters.put(USER_AGENT, userAgent);
+		
+		if(isFlagSet(FLAGS_USE_SYSTEM_PROXY)) {
+			// Read system proxy settings and generate a proxy from that
+			Properties prop = System.getProperties();
+			String proxyHost = prop.getProperty("http.proxyHost");
+			int proxyPort = Integer.parseInt(prop.getProperty("http.proxyPort", "0"));
+			if(proxyPort > 0 && proxyHost.length() > 0 && !proxyHost.equals("null")) {
+				proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+			}
+		}
 
 	}
 
@@ -238,6 +255,18 @@ public class XMLRPCClient {
 	 */
 	public void setUserAgentString(String userAgent) {
 		httpParameters.put(USER_AGENT, userAgent);
+	}
+	
+	/**
+	 * Sets a proxy to use for this client. If you want to use the system proxy,
+	 * use {@link #FLAGS_adbUSE_SYSTEM_PROXY} instead. If combined with 
+	 * {@code FLAGS_USE_SYSTEM_PROXY}, this proxy will be used instead of the
+	 * system proxy.
+	 * 
+	 * @param proxy A proxy to use for the connection.
+	 */
+	public void setProxy(Proxy proxy) {
+		this.proxy = proxy;
 	}
 
 	/**
@@ -468,8 +497,13 @@ public class XMLRPCClient {
 			try {
 
 				Call c = createCall(methodName, params);
-
-				URLConnection conn = url.openConnection();
+			
+				// If proxy is available, use it
+				URLConnection conn;
+				if(proxy != null)
+					conn = url.openConnection(proxy);
+				else
+					conn = url.openConnection();
 
 				http = verifyConnection(conn);
 				http.setInstanceFollowRedirects(false);

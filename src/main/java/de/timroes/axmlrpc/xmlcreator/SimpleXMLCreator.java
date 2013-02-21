@@ -25,7 +25,7 @@ public class SimpleXMLCreator {
 	 */
 	@Override
 	public String toString() {
-		return "<?xml version=\"1.0\"?>\n" + root.toString();
+		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + root.toString();
 	}
 
 }
