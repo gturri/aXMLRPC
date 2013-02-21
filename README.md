@@ -283,6 +283,10 @@ With this flag enabled, the client ignores all namespaces
 used within the response from the server.
 
 
+#### FLAGS_USE_SYSTEM_PROXY
+With this flag enabled, the {@link XMLRPCClient} will use the system http
+proxy to connect to the XML-RPC server.
+
 
 Meta Flags
 ----------
