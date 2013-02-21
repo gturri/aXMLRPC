@@ -60,6 +60,11 @@ $ mvn clean install
 You can download a compiled jar file from the below list and use it as a library
 for your project.
 
+[aXMLRPC v1.5.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.5.0.jar)
+  
+  * Added Proxy Support
+  * Fixed #13, Support for cookie reading
+
 [aXMLRPC v1.4.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.4.0.jar)
 
   * Added FLAGS_IGNORE_NAMESPACE, FLAGS_DEFAULT_TYPE_STRING
@@ -284,7 +289,7 @@ used within the response from the server.
 
 
 #### FLAGS_USE_SYSTEM_PROXY
-With this flag enabled, the {@link XMLRPCClient} will use the system http
+With this flag enabled, the XMLRPCClient will use the system http
 proxy to connect to the XML-RPC server.
 
 
