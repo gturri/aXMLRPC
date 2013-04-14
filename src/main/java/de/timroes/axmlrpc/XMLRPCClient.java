@@ -8,9 +8,9 @@ import java.net.*;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.net.ssl.*;
 
 /**
@@ -155,9 +155,9 @@ public class XMLRPCClient {
 	private int flags;
 
 	private URL url;
-	private Map<String,String> httpParameters = new HashMap<String, String>();
+	private Map<String,String> httpParameters = new ConcurrentHashMap<String, String>();
 
-	private Map<Long,Caller> backgroundCalls = new HashMap<Long, Caller>();
+	private Map<Long,Caller> backgroundCalls = new ConcurrentHashMap<Long, Caller>();
 
 	private ResponseParser responseParser;
 	private CookieManager cookieManager;
@@ -166,6 +166,8 @@ public class XMLRPCClient {
 	private TrustManager[] trustAllManagers;
 	
 	private Proxy proxy;
+	
+	private int timeout;
 
 	/**
 	 * Create a new XMLRPC client for the given URL.
@@ -244,6 +246,21 @@ public class XMLRPCClient {
 	 */
 	public URL getURL() {
 		return url;
+	}
+	
+	/**
+	 * Sets the time in seconds after which a call should timeout.
+	 * If {@code timeout} will be zero or less the connection will never timeout.
+	 * In case the connection times out and {@link XMLRPCTimeoutException} will
+	 * be thrown for calls made by {@link #call(java.lang.String, java.lang.Object[])}.
+	 * For calls made by {@link #callAsync(de.timroes.axmlrpc.XMLRPCCallback, java.lang.String, java.lang.Object[])}
+	 * the {@link XMLRPCCallback#onError(long, de.timroes.axmlrpc.XMLRPCException)} method
+	 * of the callback will be called. By default connections won't timeout.
+	 * 
+	 * @param timeout The timeout for connections in seconds.
+	 */
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
 	}
 
 	/**
@@ -522,6 +539,12 @@ public class XMLRPCClient {
 				http.setRequestMethod(HTTP_POST);
 				http.setDoOutput(true);
 				http.setDoInput(true);
+				
+				// Set timeout
+				if(timeout > 0) {
+					http.setConnectTimeout(timeout * 1000);
+					http.setReadTimeout(timeout * 1000);
+				}
 
 				// Set the request parameters
 				for(Map.Entry<String,String> param : httpParameters.entrySet()) {
@@ -619,6 +642,8 @@ public class XMLRPCClient {
 
 				return responseParser.parse(istream);
 
+			} catch(SocketTimeoutException ex) {
+				throw new XMLRPCTimeoutException("The XMLRPC call timed out.");
 			} catch (IOException ex) {
 				// If the thread has been canceled this exception will be thrown.
 				// So only throw an exception if the thread hasnt been canceled

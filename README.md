@@ -60,6 +60,11 @@ $ mvn clean install
 You can download a compiled jar file from the below list and use it as a library
 for your project.
 
+[aXMLRPC v1.6.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.6.0.jar)
+
+  * Added support for timeout
+  * Minor code improvements
+
 [aXMLRPC v1.5.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.5.0.jar)
   
   * Added Proxy Support
