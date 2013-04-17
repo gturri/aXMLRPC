@@ -111,9 +111,9 @@ public class XMLRPCClient {
 	/**
 	 * With this flag enabled, the client will ignore all unverified SSL/TLS 
 	 * certificates. This must be used, if you use self-signed certificates
-	 * or certificated from unknown (or untrusted) authorities. Note that, if
-	 * a custom TrustManager has been installed it will be overriden in favor
-	 * of a new all-accepting TrustManager.
+	 * or certificated from unknown (or untrusted) authorities. If this flag is
+	 * used, calls to {@link #installCustomTrustManager(javax.net.ssl.TrustManager)}
+	 * won't have any effect.
 	 */
 	public static final int FLAGS_SSL_IGNORE_INVALID_CERT = 0x80;
 	
@@ -154,7 +154,7 @@ public class XMLRPCClient {
 	public static final int FLAGS_APACHE_WS = FLAGS_IGNORE_NAMESPACES | FLAGS_NIL
 			| FLAGS_DEFAULT_TYPE_STRING;
 
-	private int flags;
+	private final int flags;
 
 	private URL url;
 	private Map<String,String> httpParameters = new ConcurrentHashMap<String, String>();
@@ -193,6 +193,23 @@ public class XMLRPCClient {
 
 		httpParameters.put(CONTENT_TYPE, TYPE_XML);
 		httpParameters.put(USER_AGENT, userAgent);
+		
+		// If invalid ssl certs are ignored, instantiate an all trusting TrustManager
+		if(isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
+			trustManagers = new TrustManager[] {
+				new X509TrustManager() {
+					public void checkClientTrusted(X509Certificate[] xcs, String string)
+							throws CertificateException { }
+
+					public void checkServerTrusted(X509Certificate[] xcs, String string)
+							throws CertificateException { }
+
+					public X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+				}
+			};
+		}
 		
 		if(isFlagSet(FLAGS_USE_SYSTEM_PROXY)) {
 			// Read system proxy settings and generate a proxy from that
@@ -342,6 +359,36 @@ public class XMLRPCClient {
 	 */
 	public void clearCookies() {
 		cookieManager.clearCookies();
+	}
+	
+	/**
+	 * Installs a custom {@link TrustManager} to handle SSL/TLS certificate verification.
+	 * This will replace any previously installed {@code TrustManager}s.
+	 * If {@link #FLAGS_SSL_IGNORE_INVALID_CERT} is set, this won't do anything.
+	 *
+	 * @param trustManager {@link TrustManager} to install.
+	 * 
+	 * @see #installCustomTrustManagers(javax.net.ssl.TrustManager[])
+	 */
+	public void installCustomTrustManager(TrustManager trustManager) {
+		if(!isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
+			trustManagers = new TrustManager[] { trustManager };
+		}
+	}
+	
+	/**
+	 * Installs custom {@link TrustManager TrustManagers} to handle SSL/TLS certificate
+	 * verification. This will replace any previously installed {@code TrustManagers}s.
+	 * If {@link #FLAGS_SSL_IGNORE_INVALID_CERT} is set, this won't do anything.
+	 * 
+	 * @param trustManagers {@link TrustManager TrustManagers} to install.
+	 * 
+	 * @see #installCustomTrustManager(javax.net.ssl.TrustManager)
+	 */
+	public void installCustomTrustManagers(TrustManager[] trustManagers) {
+		if(!isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
+			this.trustManagers = trustManagers.clone();
+		}
 	}
 
 	/**
@@ -686,23 +733,6 @@ public class XMLRPCClient {
 							}
 						});
 					}
-					
-					// Don't validate the certificate if flag is set.
-					if(isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
-						// Initialize tolerant TrustManager, override any present manager
-						trustManagers = new TrustManager[] { new X509TrustManager() {
-
-							public void checkClientTrusted(X509Certificate[] xcs, String string)
-									throws CertificateException { }
-
-							public void checkServerTrusted(X509Certificate[] xcs, String string)
-									throws CertificateException { }
-
-							public X509Certificate[] getAcceptedIssuers() {
-								return null;
-							}
-						}};
-					}
 
 					// Associate the TrustManager with TLS and SSL connections, if present.
 					if(trustManagers != null) {
@@ -729,15 +759,6 @@ public class XMLRPCClient {
 
 		}
 
-	}
-
-	/**
-	 * Install a custom TrustManager to handle SSL/TLS certificate verification.
-	 *
-	 * @param tm TrustManager object to install
-	 */
-	public void installCustomTrustManager(TrustManager tm) {
-		trustManagers = new TrustManager[] { tm };
 	}
 
 	private class CancelException extends RuntimeException { }
