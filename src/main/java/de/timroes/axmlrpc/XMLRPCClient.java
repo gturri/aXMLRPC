@@ -111,7 +111,9 @@ public class XMLRPCClient {
 	/**
 	 * With this flag enabled, the client will ignore all unverified SSL/TLS 
 	 * certificates. This must be used, if you use self-signed certificates
-	 * or certificated from unknown (or untrusted) authorities.
+	 * or certificated from unknown (or untrusted) authorities. Note that, if
+	 * a custom TrustManager has been installed it will be overriden in favor
+	 * of a new all-accepting TrustManager.
 	 */
 	public static final int FLAGS_SSL_IGNORE_INVALID_CERT = 0x80;
 	
@@ -163,7 +165,7 @@ public class XMLRPCClient {
 	private CookieManager cookieManager;
 	private AuthenticationManager authManager;
 	
-	private TrustManager[] trustAllManagers;
+	private TrustManager[] trustManagers;
 	
 	private Proxy proxy;
 	
@@ -687,31 +689,29 @@ public class XMLRPCClient {
 					
 					// Don't validate the certificate if flag is set.
 					if(isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
-					
-						// Initialize tolerant TrustManager
-						if(trustAllManagers == null) {
-							trustAllManagers = new TrustManager[] { new X509TrustManager() {
+						// Initialize tolerant TrustManager, override any present manager
+						trustManagers = new TrustManager[] { new X509TrustManager() {
 
-								public void checkClientTrusted(X509Certificate[] xcs, String string) 
-										throws CertificateException { }
+							public void checkClientTrusted(X509Certificate[] xcs, String string)
+									throws CertificateException { }
 
-								public void checkServerTrusted(X509Certificate[] xcs, String string) 
-										throws CertificateException { }
+							public void checkServerTrusted(X509Certificate[] xcs, String string)
+									throws CertificateException { }
 
-								public X509Certificate[] getAcceptedIssuers() {
-									return null;
-								}
-							}};
-						}
-						
-						// Associate the TrustManager with TLS and SSL connections.
+							public X509Certificate[] getAcceptedIssuers() {
+								return null;
+							}
+						}};
+					}
+
+					// Associate the TrustManager with TLS and SSL connections, if present.
+					if(trustManagers != null) {
 						try {
-							
 							String[] sslContexts = new String[]{ "TLS", "SSL" };
 						
 							for(String ctx : sslContexts) {
 								SSLContext sc = SSLContext.getInstance(ctx);
-								sc.init(null, trustAllManagers, new SecureRandom());
+								sc.init(null, trustManagers, new SecureRandom());
 								h.setSSLSocketFactory(sc.getSocketFactory());
 							}
 							
@@ -729,6 +729,15 @@ public class XMLRPCClient {
 
 		}
 
+	}
+
+	/**
+	 * Install a custom TrustManager to handle SSL/TLS certificate verification.
+	 *
+	 * @param tm TrustManager object to install
+	 */
+	public void installCustomTrustManager(TrustManager tm) {
+		trustManagers = new TrustManager[] { tm };
 	}
 
 	private class CancelException extends RuntimeException { }
