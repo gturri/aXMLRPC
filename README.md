@@ -60,6 +60,11 @@ $ mvn clean install
 You can download a compiled jar file from the below list and use it as a library
 for your project.
 
+[aXMLRPC v1.7.1](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.7.1.jar)
+
+  * Bugfix in String escaping (New default behavior: Escape Strings according to spec)
+  * Bugfix in Float encoding
+
 [aXMLRPC v1.7.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.7.0.jar)
   
   * Added funtionality for custom TrustManagers
