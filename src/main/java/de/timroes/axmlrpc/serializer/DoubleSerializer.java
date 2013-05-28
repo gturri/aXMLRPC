@@ -7,7 +7,8 @@ import java.text.DecimalFormat;
 import org.w3c.dom.Element;
 
 /**
- *
+ * This serializer is responsible for floating point numbers.
+ * 
  * @author Tim Roes
  */
 public class DoubleSerializer implements Serializer {
@@ -18,7 +19,7 @@ public class DoubleSerializer implements Serializer {
 
 	public XmlElement serialize(Object object) {
 		return XMLUtil.makeXmlTag(SerializerHandler.TYPE_DOUBLE,
-				new DecimalFormat("#0.0#").format(((Double)object).doubleValue()));
+				new DecimalFormat("#0.0#").format(((Number)object).doubleValue()));
 	}
 
 }
