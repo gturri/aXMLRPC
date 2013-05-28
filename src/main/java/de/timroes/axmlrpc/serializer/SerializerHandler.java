@@ -59,7 +59,7 @@ public class SerializerHandler {
 		return instance;
 	}
 
-	private StringSerializer string = new StringSerializer();
+	private StringSerializer string;
 	private BooleanSerializer bool = new BooleanSerializer();
 	private IntSerializer integer = new IntSerializer();
 	private LongSerializer long8 = new LongSerializer();
@@ -80,6 +80,10 @@ public class SerializerHandler {
 	 */
 	private SerializerHandler(int flags) {
 		this.flags = flags;
+		string = new StringSerializer(
+			(flags & XMLRPCClient.FLAGS_NO_STRING_ENCODE) == 0,
+			(flags & XMLRPCClient.FLAGS_NO_STRING_DECODE) == 0
+		);
 	}
 
 	/**

@@ -135,6 +135,21 @@ public class XMLRPCClient {
 	 * proxy to connect to the XML-RPC server.
 	 */
 	public static final int FLAGS_USE_SYSTEM_PROXY = 0x400;
+
+	/**
+	 * This prevents the decoding of incoming strings, meaning &amp; and &lt;
+	 * won't be decoded to the & sign and the "less then" sign. See
+	 * {@link #FLAGS_NO_STRING_ENCODE} for the counterpart.
+	 */
+	public static final int FLAGS_NO_STRING_DECODE = 0x800;
+
+	/**
+	 * By default outgoing string values will be encoded according to specification.
+	 * Meaning the & sign will be encoded to &amp; and the "less then" sign to &lt;.
+	 * If you set this flag, the encoding won't be done for outgoing string values.
+	 * See {@link #FLAGS_NO_STRING_ENCODE} for the counterpart.
+	 */
+	public static final int FLAGS_NO_STRING_ENCODE = 0x1000;
 	
 	/**
 	 * This flag disables all SSL warnings. It is an alternative to use

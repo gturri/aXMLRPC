@@ -302,6 +302,18 @@ With this flag enabled, the XMLRPCClient will use the system http
 proxy to connect to the XML-RPC server.
 
 
+#### FLAGS_NO_STRING_ENCODE
+By default outgoing string values will be encoded according to specification.
+Meaning the & sign will be encoded to `&amp;` and the "less then" sign to `&lt;`.
+If you set this flag, the encoding won't be done for outgoing string values.
+See `FLAGS_NO_STRING_ENCODE` for the counterpart.
+
+
+#### FLAGS_NO_STRING_DECODE
+This prevents the decoding of incoming strings, meaning `&amp;` and `&lt;`
+won't be decoded to the & sign and the "less then" sign. See
+`FLAGS_NO_STRING_ENCODE` for the counterpart.
+
 Meta Flags
 ----------
 
