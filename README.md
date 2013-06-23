@@ -60,6 +60,12 @@ $ mvn clean install
 You can download a compiled jar file from the below list and use it as a library
 for your project.
 
+[aXMLRPC v1.7.2](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.7.2.jar)
+
+  * Bugfix in double representation
+  * Allow usage of any Iterable for array parameters
+  * Allow usage of BigDecimal as double parameters
+
 [aXMLRPC v1.7.1](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.7.1.jar)
 
   * Bugfix in String escaping (New default behavior: Escape Strings according to spec)
