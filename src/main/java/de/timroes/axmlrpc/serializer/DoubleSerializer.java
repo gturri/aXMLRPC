@@ -3,7 +3,7 @@ package de.timroes.axmlrpc.serializer;
 import de.timroes.axmlrpc.XMLRPCException;
 import de.timroes.axmlrpc.XMLUtil;
 import de.timroes.axmlrpc.xmlcreator.XmlElement;
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
 import org.w3c.dom.Element;
 
 /**
@@ -18,8 +18,10 @@ public class DoubleSerializer implements Serializer {
 	}
 
 	public XmlElement serialize(Object object) {
-		return XMLUtil.makeXmlTag(SerializerHandler.TYPE_DOUBLE,
-				new DecimalFormat("#0.0#").format(((Number)object).doubleValue()));
+		// Turn double value of object into a BigDecimal to get the
+		// right decimal point format.
+		BigDecimal bd = BigDecimal.valueOf(((Number)object).doubleValue());
+		return XMLUtil.makeXmlTag(SerializerHandler.TYPE_DOUBLE, bd.toPlainString());
 	}
 
 }
