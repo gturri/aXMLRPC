@@ -53,7 +53,7 @@ public class ArraySerializer implements Serializer {
 
 	public XmlElement serialize(Object object) {
 
-		Object[] o = (Object[])object;
+		Iterable<?> iter = (Iterable<?>)object;
 		XmlElement array = new XmlElement(SerializerHandler.TYPE_ARRAY);
 		XmlElement data = new XmlElement(ARRAY_DATA);
 		array.addChildren(data);
@@ -61,7 +61,7 @@ public class ArraySerializer implements Serializer {
 		try {
 
 			XmlElement e;
-			for(Object obj : o) {
+			for(Object obj : iter) {
 				e = new XmlElement(ARRAY_VALUE);
 				e.addChildren(SerializerHandler.getDefault().serialize(obj));
 				data.addChildren(e);

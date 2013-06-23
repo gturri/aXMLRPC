@@ -5,6 +5,7 @@ import de.timroes.axmlrpc.XMLRPCException;
 import de.timroes.axmlrpc.XMLRPCRuntimeException;
 import de.timroes.axmlrpc.XMLUtil;
 import de.timroes.axmlrpc.xmlcreator.XmlElement;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -176,7 +177,8 @@ public class SerializerHandler {
 			s = string;
 		} else if(object instanceof Boolean) {
 			s = bool;
-		} else if(object instanceof Double || object instanceof Float) {
+		} else if(object instanceof Double || object instanceof Float
+				|| object instanceof BigDecimal) {
 			s = floating;
 		} else if (object instanceof Integer || object instanceof Short
 				|| object instanceof Byte) {
@@ -202,8 +204,6 @@ public class SerializerHandler {
 			s = datetime;
 		} else if (object instanceof Map) {
 			s = struct;
-		} else if(object instanceof Object[]) {
-			s = array;
 		} else if(object instanceof byte[]) {
 			byte[] old = (byte[])object;
 			Byte[] boxed = new Byte[old.length];
@@ -214,6 +214,8 @@ public class SerializerHandler {
 			s = base64;
 		} else if(object instanceof Byte[]) {
 			s = base64;
+		} else if(object instanceof Iterable<?>) {
+			s = array;
 		} else {
 			throw new XMLRPCException("No serializer found for type '"
 					+ object.getClass().getName() + "'.");

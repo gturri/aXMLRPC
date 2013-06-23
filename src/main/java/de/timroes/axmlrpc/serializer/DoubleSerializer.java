@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 public class DoubleSerializer implements Serializer {
 
 	public Object deserialize(Element content) throws XMLRPCException {
-		return Double.parseDouble(XMLUtil.getOnlyTextContent(content.getChildNodes()));
+		return Double.valueOf(XMLUtil.getOnlyTextContent(content.getChildNodes()));
 	}
 
 	public XmlElement serialize(Object object) {
