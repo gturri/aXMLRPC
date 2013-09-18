@@ -181,6 +181,7 @@ public class XMLRPCClient {
 	private AuthenticationManager authManager;
 
 	private TrustManager[] trustManagers;
+    private KeyManager[] keyManagers;
 
 	private Proxy proxy;
 
@@ -405,6 +406,36 @@ public class XMLRPCClient {
 			this.trustManagers = trustManagers.clone();
 		}
 	}
+
+    /**
+     * Installs a custom {@link KeyManager} to handle SSL/TLS certificate verification.
+     * This will replace any previously installed {@code KeyManager}s.
+     * If {@link #FLAGS_SSL_IGNORE_INVALID_CERT} is set, this won't do anything.
+     *
+     * @param keyManager {@link KeyManager} to install.
+     *
+     * @see #installCustomKeyManagers(javax.net.ssl.KeyManager[])
+     */
+    public void installCustomKeyManager(KeyManager keyManager) {
+        if(!isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
+            keyManagers = new KeyManager[] { keyManager };
+        }
+    }
+
+    /**
+     * Installs custom {@link KeyManager KeyManagers} to handle SSL/TLS certificate
+     * verification. This will replace any previously installed {@code KeyManagers}s.
+     * If {@link #FLAGS_SSL_IGNORE_INVALID_CERT} is set, this won't do anything.
+     *
+     * @param keyManagers {@link KeyManager KeyManagers} to install.
+     *
+     * @see #installCustomKeyManager(javax.net.ssl.KeyManager)
+     */
+    public void installCustomKeyManagers(KeyManager[] keyManagers) {
+      if(!isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
+        this.keyManagers = keyManagers.clone();
+      }
+    }
 
 	/**
 	 * Call a remote procedure on the server. The method must be described by
@@ -756,7 +787,7 @@ public class XMLRPCClient {
 
 							for(String ctx : sslContexts) {
 								SSLContext sc = SSLContext.getInstance(ctx);
-								sc.init(null, trustManagers, new SecureRandom());
+								sc.init(keyManagers, trustManagers, new SecureRandom());
 								h.setSSLSocketFactory(sc.getSocketFactory());
 							}
 
