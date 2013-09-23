@@ -88,18 +88,18 @@ public class XMLRPCClient {
 	/**
 	 * With this flag enabled, the XML-RPC client will ignore the HTTP status
 	 * code of the response from the server. According to specification the
-	 * status code must be 200. This flag is only needed for the use with 
+	 * status code must be 200. This flag is only needed for the use with
 	 * not standard compliant servers.
 	 */
 	public static final int FLAGS_IGNORE_STATUSCODE = 0x10;
-	
+
 	/**
 	 * With this flag enabled, the client will forward the request, if
 	 * the 301 or 302 HTTP status code has been received. If this flag has not
 	 * been set, the client will throw an exception on these HTTP status codes.
 	 */
 	public static final int FLAGS_FORWARD = 0x20;
-	
+
 	/**
 	 * With this flag enabled, the client will ignore, if the URL doesn't match
 	 * the SSL Certificate. This should be used with caution. Normally the URL
@@ -107,16 +107,16 @@ public class XMLRPCClient {
 	 * certificates.
 	 */
 	public static final int FLAGS_SSL_IGNORE_INVALID_HOST = 0x40;
-	
+
 	/**
-	 * With this flag enabled, the client will ignore all unverified SSL/TLS 
+	 * With this flag enabled, the client will ignore all unverified SSL/TLS
 	 * certificates. This must be used, if you use self-signed certificates
 	 * or certificated from unknown (or untrusted) authorities. If this flag is
 	 * used, calls to {@link #installCustomTrustManager(javax.net.ssl.TrustManager)}
 	 * won't have any effect.
 	 */
 	public static final int FLAGS_SSL_IGNORE_INVALID_CERT = 0x80;
-	
+
 	/**
 	 * With this flag enabled, a value with a missing type tag, will be parsed
 	 * as a string element. This is just for incoming messages. Outgoing messages
@@ -129,7 +129,7 @@ public class XMLRPCClient {
 	 * used within the response from the server.
 	 */
 	public static final int FLAGS_IGNORE_NAMESPACES = 0x200;
-	
+
 	/**
 	 * With this flag enabled, the {@link XMLRPCClient} will use the system http
 	 * proxy to connect to the XML-RPC server.
@@ -150,13 +150,13 @@ public class XMLRPCClient {
 	 * See {@link #FLAGS_NO_STRING_ENCODE} for the counterpart.
 	 */
 	public static final int FLAGS_NO_STRING_ENCODE = 0x1000;
-	
+
 	/**
 	 * This flag disables all SSL warnings. It is an alternative to use
 	 * FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST. There
 	 * is no functional difference.
 	 */
-	public static final int FLAGS_SSL_IGNORE_ERRORS = 
+	public static final int FLAGS_SSL_IGNORE_ERRORS =
 			FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST;
 
 	/**
@@ -179,11 +179,12 @@ public class XMLRPCClient {
 	private ResponseParser responseParser;
 	private CookieManager cookieManager;
 	private AuthenticationManager authManager;
-	
+
 	private TrustManager[] trustManagers;
-	
+    private KeyManager[] keyManagers;
+
 	private Proxy proxy;
-	
+
 	private int timeout;
 
 	/**
@@ -208,7 +209,7 @@ public class XMLRPCClient {
 
 		httpParameters.put(CONTENT_TYPE, TYPE_XML);
 		httpParameters.put(USER_AGENT, userAgent);
-		
+
 		// If invalid ssl certs are ignored, instantiate an all trusting TrustManager
 		if(isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
 			trustManagers = new TrustManager[] {
@@ -225,7 +226,7 @@ public class XMLRPCClient {
 				}
 			};
 		}
-		
+
 		if(isFlagSet(FLAGS_USE_SYSTEM_PROXY)) {
 			// Read system proxy settings and generate a proxy from that
 			Properties prop = System.getProperties();
@@ -275,13 +276,13 @@ public class XMLRPCClient {
 	 * Returns the URL this XMLRPCClient is connected to. If that URL permanently forwards
 	 * to another URL, this method will return the forwarded URL, as soon as
 	 * the first call has been made.
-	 * 
+	 *
 	 * @return Returns the URL for this XMLRPCClient.
 	 */
 	public URL getURL() {
 		return url;
 	}
-	
+
 	/**
 	 * Sets the time in seconds after which a call should timeout.
 	 * If {@code timeout} will be zero or less the connection will never timeout.
@@ -290,7 +291,7 @@ public class XMLRPCClient {
 	 * For calls made by {@link #callAsync(de.timroes.axmlrpc.XMLRPCCallback, java.lang.String, java.lang.Object[])}
 	 * the {@link XMLRPCCallback#onError(long, de.timroes.axmlrpc.XMLRPCException)} method
 	 * of the callback will be called. By default connections won't timeout.
-	 * 
+	 *
 	 * @param timeout The timeout for connections in seconds.
 	 */
 	public void setTimeout(int timeout) {
@@ -307,13 +308,13 @@ public class XMLRPCClient {
 	public void setUserAgentString(String userAgent) {
 		httpParameters.put(USER_AGENT, userAgent);
 	}
-	
+
 	/**
 	 * Sets a proxy to use for this client. If you want to use the system proxy,
-	 * use {@link #FLAGS_adbUSE_SYSTEM_PROXY} instead. If combined with 
+	 * use {@link #FLAGS_adbUSE_SYSTEM_PROXY} instead. If combined with
 	 * {@code FLAGS_USE_SYSTEM_PROXY}, this proxy will be used instead of the
 	 * system proxy.
-	 * 
+	 *
 	 * @param proxy A proxy to use for the connection.
 	 */
 	public void setProxy(Proxy proxy) {
@@ -339,7 +340,7 @@ public class XMLRPCClient {
 	/**
 	 * Set the username and password that should be used to perform basic
 	 * http authentication.
-	 * 
+	 *
 	 * @param user Username
 	 * @param pass Password
 	 */
@@ -354,19 +355,19 @@ public class XMLRPCClient {
 	public void clearLoginData() {
 		authManager.clearAuthData();
 	}
-	
+
 	/**
 	 * Returns a {@link Map} of all cookies. It contains each cookie key as a map
 	 * key and its value as a map value. Cookies will only be used if {@link #FLAGS_ENABLE_COOKIES}
 	 * has been set for the client. This map will also be available (and empty)
 	 * when this flag hasn't been said, but has no effect on the HTTP connection.
-	 * 
+	 *
 	 * @return A {@code Map} of all cookies.
 	 */
 	public Map<String,String> getCookies() {
 		return cookieManager.getCookies();
 	}
-	
+
 	/**
 	 * Delete all cookies currently used by the client.
 	 * This method has only an effect, as long as the FLAGS_ENABLE_COOKIES has
@@ -375,14 +376,14 @@ public class XMLRPCClient {
 	public void clearCookies() {
 		cookieManager.clearCookies();
 	}
-	
+
 	/**
 	 * Installs a custom {@link TrustManager} to handle SSL/TLS certificate verification.
 	 * This will replace any previously installed {@code TrustManager}s.
 	 * If {@link #FLAGS_SSL_IGNORE_INVALID_CERT} is set, this won't do anything.
 	 *
 	 * @param trustManager {@link TrustManager} to install.
-	 * 
+	 *
 	 * @see #installCustomTrustManagers(javax.net.ssl.TrustManager[])
 	 */
 	public void installCustomTrustManager(TrustManager trustManager) {
@@ -390,14 +391,14 @@ public class XMLRPCClient {
 			trustManagers = new TrustManager[] { trustManager };
 		}
 	}
-	
+
 	/**
 	 * Installs custom {@link TrustManager TrustManagers} to handle SSL/TLS certificate
 	 * verification. This will replace any previously installed {@code TrustManagers}s.
 	 * If {@link #FLAGS_SSL_IGNORE_INVALID_CERT} is set, this won't do anything.
-	 * 
+	 *
 	 * @param trustManagers {@link TrustManager TrustManagers} to install.
-	 * 
+	 *
 	 * @see #installCustomTrustManager(javax.net.ssl.TrustManager)
 	 */
 	public void installCustomTrustManagers(TrustManager[] trustManagers) {
@@ -405,6 +406,36 @@ public class XMLRPCClient {
 			this.trustManagers = trustManagers.clone();
 		}
 	}
+
+    /**
+     * Installs a custom {@link KeyManager} to handle SSL/TLS certificate verification.
+     * This will replace any previously installed {@code KeyManager}s.
+     * If {@link #FLAGS_SSL_IGNORE_INVALID_CERT} is set, this won't do anything.
+     *
+     * @param keyManager {@link KeyManager} to install.
+     *
+     * @see #installCustomKeyManagers(javax.net.ssl.KeyManager[])
+     */
+    public void installCustomKeyManager(KeyManager keyManager) {
+        if(!isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
+            keyManagers = new KeyManager[] { keyManager };
+        }
+    }
+
+    /**
+     * Installs custom {@link KeyManager KeyManagers} to handle SSL/TLS certificate
+     * verification. This will replace any previously installed {@code KeyManagers}s.
+     * If {@link #FLAGS_SSL_IGNORE_INVALID_CERT} is set, this won't do anything.
+     *
+     * @param keyManagers {@link KeyManager KeyManagers} to install.
+     *
+     * @see #installCustomKeyManager(javax.net.ssl.KeyManager)
+     */
+    public void installCustomKeyManagers(KeyManager[] keyManagers) {
+      if(!isFlagSet(FLAGS_SSL_IGNORE_INVALID_CERT)) {
+        this.keyManagers = keyManagers.clone();
+      }
+    }
 
 	/**
 	 * Call a remote procedure on the server. The method must be described by
@@ -447,7 +478,7 @@ public class XMLRPCClient {
 
 	/**
 	 * Cancel a specific asynchronous call.
-	 * 
+	 *
 	 * @param id The id of the call as returned by the callAsync method.
 	 */
 	public void cancel(long id) {
@@ -460,7 +491,7 @@ public class XMLRPCClient {
 
 		// Cancel the thread
 		cancel.cancel();
-		
+
 		try {
 			// Wait for the thread
 			cancel.join();
@@ -586,11 +617,11 @@ public class XMLRPCClient {
 		 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 		 */
 		public Object call(String methodName, Object[] params) throws XMLRPCException {
-			
+
 			try {
 
 				Call c = createCall(methodName, params);
-			
+
 				// If proxy is available, use it
 				URLConnection conn;
 				if(proxy != null)
@@ -603,7 +634,7 @@ public class XMLRPCClient {
 				http.setRequestMethod(HTTP_POST);
 				http.setDoOutput(true);
 				http.setDoInput(true);
-				
+
 				// Set timeout
 				if(timeout > 0) {
 					http.setConnectTimeout(timeout * 1000);
@@ -631,14 +662,14 @@ public class XMLRPCClient {
 					// Due to a bug on android, the getResponseCode()-method will
 					// fail the first time, with a IOException, when 401 or 403 has been returned.
 					// The second time it should success. If it fail the second time again
-					// the normal exceptipon handling can take care of this, since 
+					// the normal exceptipon handling can take care of this, since
 					// it is a real error.
 					statusCode = http.getResponseCode();
 				}
 
 				InputStream istream;
-				
-				// If status code was 401 or 403 throw exception or if appropriate 
+
+				// If status code was 401 or 403 throw exception or if appropriate
 				// flag is set, ignore error code.
 				if(statusCode == HttpURLConnection.HTTP_FORBIDDEN
 						|| statusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
@@ -648,7 +679,7 @@ public class XMLRPCClient {
 						// error code, use getErrorStream instead
 						istream = http.getErrorStream();
 					} else {
-						throw new XMLRPCException("Invalid status code '" 
+						throw new XMLRPCException("Invalid status code '"
 								+ statusCode + "' returned from server.");
 					}
 
@@ -662,31 +693,31 @@ public class XMLRPCClient {
 					// ... do either a foward
 					if(isFlagSet(FLAGS_FORWARD)) {
 						boolean temporaryForward = (statusCode == HttpURLConnection.HTTP_MOVED_TEMP);
-						
+
 						// Get new location from header field.
 						String newLocation = http.getHeaderField("Location");
 						// Try getting header in lower case, if no header has been found
 						if(newLocation == null || newLocation.length() <= 0)
 							newLocation = http.getHeaderField("location");
-						
+
 						// Set new location, disconnect current connection and request to new location.
 						URL oldURL = url;
 						url = new URL(newLocation);
 						http.disconnect();
 						Object forwardedResult = call(methodName, params);
-						
+
 						// In case of temporary forward, restore original URL again for next call.
 						if(temporaryForward) {
 							url = oldURL;
 						}
-						
-						return forwardedResult;	
-						
+
+						return forwardedResult;
+
 					} else {
 						// ... or throw an exception
 						throw new XMLRPCException("The server responded with a http 301 or 302 status "
 								+ "code, but forwarding has not been enabled (FLAGS_FORWARD).");
-						
+
 					}
 				}
 
@@ -701,7 +732,7 @@ public class XMLRPCClient {
 						throw new XMLRPCException("The Content-Type of the response must be text/xml.");
 					}
 				}
-				
+
 				cookieManager.readCookies(http);
 
 				return responseParser.parse(istream);
@@ -717,29 +748,29 @@ public class XMLRPCClient {
 				} else {
 					throw new CancelException();
 				}
-			} 
+			}
 
 		}
-		
+
 		/**
 		 * Verifies the given URLConnection to be a valid HTTP or HTTPS connection.
-		 * If the SSL ignoring flags are set, the method will ignore SSL warnings. 
-		 * 
+		 * If the SSL ignoring flags are set, the method will ignore SSL warnings.
+		 *
 		 * @param conn The URLConnection to validate.
 		 * @return The verified HttpURLConnection.
 		 * @throws XMLRPCException Will be thrown if an error occurred.
 		 */
 		private HttpURLConnection verifyConnection(URLConnection conn) throws XMLRPCException {
-			
+
 				if(!(conn instanceof HttpURLConnection)) {
 					throw new IllegalArgumentException("The URL is not valid for a http connection.");
 				}
 
 				// Validate the connection if its an SSL connection
 				if(conn instanceof HttpsURLConnection) {
-					
+
 					HttpsURLConnection h = (HttpsURLConnection)conn;
-					
+
 					// Don't check, that URL matches the certificate.
 					if(isFlagSet(FLAGS_SSL_IGNORE_INVALID_HOST)) {
 						h.setHostnameVerifier(new HostnameVerifier() {
@@ -753,21 +784,21 @@ public class XMLRPCClient {
 					if(trustManagers != null) {
 						try {
 							String[] sslContexts = new String[]{ "TLS", "SSL" };
-						
+
 							for(String ctx : sslContexts) {
 								SSLContext sc = SSLContext.getInstance(ctx);
-								sc.init(null, trustManagers, new SecureRandom());
+								sc.init(keyManagers, trustManagers, new SecureRandom());
 								h.setSSLSocketFactory(sc.getSocketFactory());
 							}
-							
+
 						} catch(Exception ex) {
 							throw new XMLRPCException(ex);
 						}
-						
+
 					}
-					
+
 					return h;
-					
+
 				}
 
 				return (HttpURLConnection)conn;
