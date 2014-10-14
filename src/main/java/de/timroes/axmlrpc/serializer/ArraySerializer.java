@@ -5,6 +5,7 @@ import de.timroes.axmlrpc.XMLRPCRuntimeException;
 import de.timroes.axmlrpc.XMLUtil;
 import de.timroes.axmlrpc.xmlcreator.XmlElement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -53,7 +54,12 @@ public class ArraySerializer implements Serializer {
 
 	public XmlElement serialize(Object object) {
 
-		Iterable<?> iter = (Iterable<?>)object;
+		Iterable<?> iter;
+		if ( object instanceof Iterable<?>){
+			iter = (Iterable<?>)object;
+		} else {
+			iter = Arrays.asList((Object[]) object);
+		}
 		XmlElement array = new XmlElement(SerializerHandler.TYPE_ARRAY);
 		XmlElement data = new XmlElement(ARRAY_DATA);
 		array.addChildren(data);
