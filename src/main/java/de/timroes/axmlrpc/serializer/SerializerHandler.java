@@ -214,7 +214,7 @@ public class SerializerHandler {
 			s = base64;
 		} else if(object instanceof Byte[]) {
 			s = base64;
-		} else if(object instanceof Iterable<?>) {
+		} else if(object instanceof Iterable<?> || object instanceof Object[]) {
 			s = array;
 		} else {
 			throw new XMLRPCException("No serializer found for type '"
