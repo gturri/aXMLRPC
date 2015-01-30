@@ -1,0 +1,32 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+
+sourceCompatibility = 1.7
+
+ext.versions = [
+	groovy: '2.3.9',
+	groovyXmlrpc: '0.8',
+	junit: '4.12',
+	okhttp: '2.2.0'
+]
+
+sourceSets.test.groovy.srcDirs += sourceSets.test.java.srcDirs
+sourceSets.test.java.srcDirs = []
+
+test {
+	// Exclude all tests that are used in test suites, because otherwise
+	// they would run twice (once in the suite and once for themself).
+	exclude "**/suites/tests/**"
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile "com.squareup.okhttp:okhttp:${versions.okhttp}"
+	
+	testCompile "org.codehaus.groovy:groovy:${versions.groovy}"
+	testCompile "org.codehaus.groovy:groovy-xmlrpc:${versions.groovyXmlrpc}"
+	testCompile "junit:junit:${versions.junit}"
+}
