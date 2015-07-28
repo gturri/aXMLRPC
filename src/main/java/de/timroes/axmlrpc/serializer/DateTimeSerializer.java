@@ -23,8 +23,12 @@ public class DateTimeSerializer implements Serializer {
 
 	@Override
 	public Object deserialize(Element content) throws XMLRPCException {
+		return deserialize(XMLUtil.getOnlyTextContent(content.getChildNodes()));
+	}
+
+	public Object deserialize(String dateStr) throws XMLRPCException {
 		try {
-			String value = formatStringIfNeeded(XMLUtil.getOnlyTextContent(content.getChildNodes()));
+			String value = formatStringIfNeeded(dateStr);
 			return javax.xml.bind.DatatypeConverter.parseDateTime(value).getTime();
 		} catch (Exception ex) {
 			throw new XMLRPCException("Unable to parse given date.", ex);
