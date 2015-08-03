@@ -20,6 +20,16 @@ artifacts {
 	archives javadocJar
 }
 
+repositories {
+      mavenLocal()
+      mavenCentral()
+}
+
+
+dependencies {
+    testCompile "junit:junit:4.12"
+}
+
 def sonatypeProps = 'sonatype.properties'
 
 if(project.hasProperty(sonatypeProps) && new File(project.property(sonatypeProps)).exists()) {

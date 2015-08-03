@@ -26,16 +26,11 @@ as a module to yours. So you will always stay up to date with the library.
 
 ### Compile it as library
 
-The library itself is a NetBeans project and can be compiled either with NetBeans or
-with `ant`. The resulting JAR file can be used as a dependency in your project. If you
-use NetBeans you can make a dependency directly to the project.
+aXMLRPC uses gradle, so you can build it using
+
+    ./gradlew jar
 
 ### Use Maven
-
-The library is also a valid Maven project. So you can use Maven to compile it.
-If you want to use it as a Maven project in NetBeans, you will have to delete
-the `nbproject` folder. Afterwards NetBeans will detect it as a Maven project (NetBeans
-restart required).
 
 To use it on your Maven project, add it as a dependency on your pom.xml file:
 
@@ -46,13 +41,8 @@ To use it on your Maven project, add it as a dependency on your pom.xml file:
     <version>X.Y.Z</version>
 </dependency>
 ```
-    
-where X.Y.Z is the current aXMLRPC version and install it on your local Maven 
-repository (since it's not available on the Maven repositories):
 
-```console
-$ cd /path/to/aXMLRPC/
-$ mvn clean install
+where X.Y.Z is the current aXMLRPC version
 ```
 
 ### Download the JAR library
