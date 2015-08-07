@@ -40,7 +40,7 @@ bintray {
 	pkg {
 		repo = 'maven'
 		name = 'aXMLRPC'
-		userOrg = System.properties['bintray.user']
+		userOrg = project.properties['bintray.user']
 		licenses = ['MIT']
 		vcsUrl = 'https://github.com/timroes/aXMLRPC.git'
 		version {
