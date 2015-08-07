@@ -43,7 +43,6 @@ To use it on your Maven project, add it as a dependency on your pom.xml file:
 ```
 
 where X.Y.Z is the current aXMLRPC version
-```
 
 ### Download the JAR library
 
