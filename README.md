@@ -26,9 +26,9 @@ as a module to yours. So you will always stay up to date with the library.
 
 ### Compile it as library
 
-aXMLRPC uses gradle, so you can build it using
+aXMLRPC uses maven, so you can build it using
 
-    ./gradlew jar
+    mvn install
 
 ### Use Maven
 
@@ -36,7 +36,7 @@ To use it on your Maven project, add it as a dependency on your pom.xml file:
 
 ```xml
 <dependency>
-    <groupId>de.timroes</groupId>
+    <groupId>fr.turri</groupId>
     <artifactId>aXMLRPC</artifactId>
     <version>X.Y.Z</version>
 </dependency>
