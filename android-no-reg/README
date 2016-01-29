@@ -1,0 +1,11 @@
+This directory contains is a dummy library app project and is used to ensure the
+code is compatible with Android (eg: that we don't use an API not available on
+Android).
+
+To use it, on a laptop where the Android environment is setup, just `cd` into this
+directory, and run
+
+    ./test.sh
+
+Tests are run locally so it may not be completely error proof, but it already makes
+catches potential issues (eg: using javax.xml.bind in the code)
