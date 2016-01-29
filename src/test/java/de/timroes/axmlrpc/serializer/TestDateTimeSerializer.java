@@ -32,12 +32,12 @@ public class TestDateTimeSerializer {
 
 	@Test
 	public void canParseDateWithoutDay() throws Exception {
-		assertDeserializeEquals(new Date(85, 2, 0), "1985-03");
+		assertDeserializeEquals(new Date(85, 2, 1), "1985-03");
 	}
 
 	@Test
 	public void canParseDateWithoutMonth() throws Exception {
-		assertDeserializeEquals(new Date(85, 0, 0), "1985");
+		assertDeserializeEquals(new Date(85, 0, 1), "1985");
 	}
 
 	@Test
