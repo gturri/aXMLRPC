@@ -355,4 +355,8 @@ Bugs?
 =====
 
 If you find a bug or wish some enhancements for the library, please
-fill an issue here on github or contact me otherwise (www.timroes.de).
+fill an issue here on github.
+
+Build status
+============
+Status: ![Status](https://travis-ci.org/gturri/aXMLRPC.svg?branch=master)
