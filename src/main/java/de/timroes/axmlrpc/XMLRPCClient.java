@@ -286,7 +286,7 @@ public class XMLRPCClient {
 	/**
 	 * Sets the time in seconds after which a call should timeout.
 	 * If {@code timeout} will be zero or less the connection will never timeout.
-	 * In case the connection times out and {@link XMLRPCTimeoutException} will
+	 * In case the connection times out an {@link XMLRPCTimeoutException} will
 	 * be thrown for calls made by {@link #call(java.lang.String, java.lang.Object[])}.
 	 * For calls made by {@link #callAsync(de.timroes.axmlrpc.XMLRPCCallback, java.lang.String, java.lang.Object[])}
 	 * the {@link XMLRPCCallback#onError(long, de.timroes.axmlrpc.XMLRPCException)} method
