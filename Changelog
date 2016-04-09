@@ -1,0 +1,7 @@
+1.8.3
+Fix compatibility with Android
+
+1.8.2
+
+Forking from timroes project. The only purpose of this version is to have
+the fix from 1.8.1 in maven central

@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="turri.fr.jiso8601_android_no_reg">
+
+    <application
+        android:allowBackup="true"
+        android:supportsRtl="true">
+
+    </application>
+
+</manifest>

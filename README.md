@@ -26,9 +26,9 @@ as a module to yours. So you will always stay up to date with the library.
 
 ### Compile it as library
 
-aXMLRPC uses gradle, so you can build it using
+aXMLRPC uses maven, so you can build it using
 
-    ./gradlew jar
+    mvn install
 
 ### Use Maven
 
@@ -36,84 +36,13 @@ To use it on your Maven project, add it as a dependency on your pom.xml file:
 
 ```xml
 <dependency>
-    <groupId>de.timroes</groupId>
+    <groupId>fr.turri</groupId>
     <artifactId>aXMLRPC</artifactId>
     <version>X.Y.Z</version>
 </dependency>
 ```
 
 where X.Y.Z is the current aXMLRPC version
-
-### Download the JAR library
-
-You can download a compiled jar file from the below list and use it as a library
-for your project.
-
-[aXMLRPC v1.7.2](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.7.2.jar)
-
-  * Bugfix in double representation
-  * Allow usage of any Iterable for array parameters
-  * Allow usage of BigDecimal as double parameters
-
-[aXMLRPC v1.7.1](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.7.1.jar)
-
-  * Bugfix in String escaping (New default behavior: Escape Strings according to spec)
-  * Bugfix in Float encoding
-
-[aXMLRPC v1.7.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.7.0.jar)
-  
-  * Added funtionality for custom TrustManagers
-
-[aXMLRPC v1.6.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.6.0.jar)
-
-  * Added support for timeout
-  * Minor code improvements
-
-[aXMLRPC v1.5.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.5.0.jar)
-  
-  * Added Proxy Support
-  * Fixed #13, Support for cookie reading
-
-[aXMLRPC v1.4.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.4.0.jar)
-
-  * Added FLAGS_IGNORE_NAMESPACE, FLAGS_DEFAULT_TYPE_STRING
-
-[aXMLRPC v1.3.5](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.5.jar)
-
-  * Fixed bug in canceling async calls
-
-[aXMLRPC v1.3.4](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.4.jar)
-
-  * Added getURL-method
-  * Added FLAGS_IGNORE_SSL_ERRORS
-  * Removed debugging information from JAR
-
-[aXMLRPC v1.3.3](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.3.jar)
-
-  * Improved handling of 40X http errors
-
-[aXMLRPC v1.3.2](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.2.jar)
-
-  * Fixed handling of 40x http errors
-
-[aXMLRPC v1.3.1](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.1.jar)
-
-  * Fixed bug in XML struct creation
-  * Method to clear HTTP basic auth login data
-
-[aXMLRPC v1.3.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.3.0.jar)
-
-  * Flags to ignore SSL warnings
-  * HTTP forwarding
-  * Improved code quality
-
-**Real old versions:**
-
-  * [aXMLRPC v1.2.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.2.0.jar)
-  * [aXMLRPC v1.1.0](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.1.0.jar)
-  * [aXMLRPC v1.0.3](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.0.3.jar)
-  * [aXMLRPC v1.0.2](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.0.2.jar)
-  * [aXMLRPC v1.0.1](https://dl.dropbox.com/u/56970236/aXMLRPC/aXMLRPC_v1.0.1.jar)
 
 
 How to use the library?
@@ -355,4 +284,8 @@ Bugs?
 =====
 
 If you find a bug or wish some enhancements for the library, please
-fill an issue here on github or contact me otherwise (www.timroes.de).
+fill an issue here on github.
+
+Build status
+============
+Status: ![Status](https://travis-ci.org/gturri/aXMLRPC.svg?branch=master)
