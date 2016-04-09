@@ -27,6 +27,12 @@ public class TestResponseParser {
 	}
 
 	@Test
+	public void canParseAsStringWhenTypeIsntExplicitelyProvided() throws Exception {
+		setMockWithXmlRpcContent("<value>toto</value>");
+		assertEquals("toto", makeDummyCall(XMLRPCClient.FLAGS_DEFAULT_TYPE_STRING));
+	}
+
+	@Test
 	public void canParseInt() throws Exception {
 		setMockWithXmlRpcContent("<value><i4>32</i4></value>");
 		assertEquals(32, makeDummyCall());
@@ -53,6 +59,10 @@ public class TestResponseParser {
 	}
 
 	private Object makeDummyCall() throws Exception {
-		return new XMLRPCClient(new URL("http://localhost:" + port + endPoint)).call("dummy_method");
+		return makeDummyCall(XMLRPCClient.FLAGS_NONE);
+	}
+
+	private Object makeDummyCall(int flags) throws Exception {
+		return new XMLRPCClient(new URL("http://localhost:" + port + endPoint), flags).call("dummy_method");
 	}
 }
