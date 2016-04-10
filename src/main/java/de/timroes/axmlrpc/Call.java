@@ -45,7 +45,7 @@ public class Call {
 	 * 		be build without errors.
 	 * @see XMLRPCClient
 	 */
-	public String getXML() throws XMLRPCException {
+	public String getXML(boolean debugMode) throws XMLRPCException {
 
 		SimpleXMLCreator creator = new SimpleXMLCreator();
 
@@ -65,7 +65,13 @@ public class Call {
 			}
 		}
 
-		return creator.toString();
+		String result = creator.toString();
+
+		if ( debugMode){
+			System.out.println(result);
+		}
+
+		return result;
 	}
 
 	/**

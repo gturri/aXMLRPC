@@ -656,7 +656,7 @@ public class XMLRPCClient {
 				cookieManager.setCookies(http);
 
 				OutputStreamWriter stream = new OutputStreamWriter(http.getOutputStream());
-				stream.write(c.getXML());
+				stream.write(c.getXML(isFlagSet(FLAGS_DEBUG)));
 				stream.flush();
 				stream.close();
 
