@@ -243,6 +243,10 @@ This prevents the decoding of incoming strings, meaning `&amp;` and `&lt;`
 won't be decoded to the & sign and the "less then" sign. See
 `FLAGS_NO_STRING_ENCODE` for the counterpart.
 
+#### FLAGS_DEBUG
+Will display additional information on the console.
+Do not use it in production.
+
 Meta Flags
 ----------
 
