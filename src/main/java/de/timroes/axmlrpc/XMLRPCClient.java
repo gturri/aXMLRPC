@@ -152,6 +152,12 @@ public class XMLRPCClient {
 	public static final int FLAGS_NO_STRING_ENCODE = 0x1000;
 
 	/**
+	 * Activate debug mode.
+	 * Do NOT use if you don't need it.
+	 */
+	public static final int FLAGS_DEBUG = 0x2000;
+
+	/**
 	 * This flag disables all SSL warnings. It is an alternative to use
 	 * FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST. There
 	 * is no functional difference.
@@ -735,7 +741,7 @@ public class XMLRPCClient {
 
 				cookieManager.readCookies(http);
 
-				return responseParser.parse(istream);
+				return responseParser.parse(istream, isFlagSet(FLAGS_DEBUG));
 
 			} catch(SocketTimeoutException ex) {
 				throw new XMLRPCTimeoutException("The XMLRPC call timed out.");

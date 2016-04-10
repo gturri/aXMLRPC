@@ -1,10 +1,22 @@
 package de.timroes.axmlrpc;
 
 import de.timroes.axmlrpc.serializer.SerializerHandler;
+
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -27,7 +39,7 @@ class ResponseParser {
 	 * @throws XMLRPCException Will be thrown whenever something fails.
 	 * @throws XMLRPCServerException Will be thrown, if the server returns an error.
 	 */
-	public Object parse(InputStream response) throws XMLRPCException {
+	public Object parse(InputStream response, boolean debugMode) throws XMLRPCException {
 
 		try {
 
@@ -35,7 +47,11 @@ class ResponseParser {
 			factory.setNamespaceAware(true);
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document dom = builder.parse(response);
+			if (debugMode ){
+				printDocument(dom, System.out);
+			}
 			Element e = dom.getDocumentElement();
+
 
 			// Check for root tag
 			if(!e.getNodeName().equals(XMLRPCClient.METHOD_RESPONSE)) {
@@ -76,10 +92,23 @@ class ResponseParser {
 
 	}
 
+	public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer = tf.newTransformer();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+		transformer.transform(new DOMSource(doc),
+				new StreamResult(new OutputStreamWriter(out, "UTF-8")));
+	}
+
 	/**
 	 * This method takes an element (must be a param or fault element) and
 	 * returns the deserialized object of this param tag.
-	 * 
+	 *
 	 * @param element An param element.
 	 * @return The deserialized object within the given param element.
 	 * @throws XMLRPCException Will be thrown when the structure of the document

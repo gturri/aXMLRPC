@@ -1,3 +1,5 @@
+Add FLAGS_DEBUG to display the xml returned by the server
+
 1.8.3
 Fix compatibility with Android
 
