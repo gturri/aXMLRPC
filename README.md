@@ -16,7 +16,7 @@ How to include it?
 ==================
 
 How to include the aXMLRPC client into your project?
-There are four different ways to do that:
+There are several ways to do that:
 
 ### Include the source code
 
