@@ -317,7 +317,7 @@ public class XMLRPCClient {
 
 	/**
 	 * Sets a proxy to use for this client. If you want to use the system proxy,
-	 * use {@link #FLAGS_adbUSE_SYSTEM_PROXY} instead. If combined with
+	 * use {@link #FLAGS_USE_SYSTEM_PROXY} instead. If combined with
 	 * {@code FLAGS_USE_SYSTEM_PROXY}, this proxy will be used instead of the
 	 * system proxy.
 	 *
