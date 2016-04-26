@@ -81,13 +81,10 @@ class ResponseParser {
 
 			throw new XMLRPCException("The methodResponse tag must contain a fault or params tag.");
 
+		} catch(XMLRPCServerException e) {
+			throw e;
 		} catch (Exception ex) {
-
-			if(ex instanceof XMLRPCServerException)
-				throw (XMLRPCServerException)ex;
-			else
-				throw new XMLRPCException("Error getting result from server.", ex);
-
+			throw new XMLRPCException("Error getting result from server.", ex);
 		}
 
 	}
@@ -116,9 +113,9 @@ class ResponseParser {
 	 */
 	private Object getReturnValueFromElement(Element element) throws XMLRPCException {
 
-		element = XMLUtil.getOnlyChildElement(element.getChildNodes());
+		Element childElement = XMLUtil.getOnlyChildElement(element.getChildNodes());
 
-		return SerializerHandler.getDefault().deserialize(element);
+		return SerializerHandler.getDefault().deserialize(childElement);
 
 	}
 
