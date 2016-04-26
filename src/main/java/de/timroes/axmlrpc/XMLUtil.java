@@ -12,6 +12,8 @@ import org.w3c.dom.NodeList;
  */
 public class XMLUtil {
 
+	private XMLUtil() {}
+
 	/**
 	 * Returns the only child element in a given NodeList.
 	 * Will throw an error if there is more then one child element or any other

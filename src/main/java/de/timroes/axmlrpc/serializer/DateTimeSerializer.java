@@ -16,7 +16,7 @@ import fr.turri.jiso8601.Iso8601Deserializer;
 public class DateTimeSerializer implements Serializer {
 
 	private static final String DATETIME_FORMAT = "yyyyMMdd'T'HHmmss";
-	private static final SimpleDateFormat DATE_FORMATER = new SimpleDateFormat(DATETIME_FORMAT);
+	private final SimpleDateFormat DATE_FORMATER = new SimpleDateFormat(DATETIME_FORMAT);
 
 	@Override
 	public Object deserialize(Element content) throws XMLRPCException {
