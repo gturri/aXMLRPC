@@ -698,7 +698,7 @@ public class XMLRPCClient {
 						|| statusCode == HttpURLConnection.HTTP_MOVED_TEMP) {
 					// ... do either a foward
 					if(isFlagSet(FLAGS_FORWARD)) {
-						boolean temporaryForward = (statusCode == HttpURLConnection.HTTP_MOVED_TEMP);
+						boolean temporaryForward = statusCode == HttpURLConnection.HTTP_MOVED_TEMP;
 
 						// Get new location from header field.
 						String newLocation = http.getHeaderField("Location");
@@ -733,10 +733,8 @@ public class XMLRPCClient {
 				}
 
 				// Check for strict parameters
-				if(isFlagSet(FLAGS_STRICT)) {
-					if(!http.getContentType().startsWith(TYPE_XML)) {
-						throw new XMLRPCException("The Content-Type of the response must be text/xml.");
-					}
+				if(isFlagSet(FLAGS_STRICT) && !http.getContentType().startsWith(TYPE_XML)) {
+					throw new XMLRPCException("The Content-Type of the response must be text/xml.");
 				}
 
 				cookieManager.readCookies(http);

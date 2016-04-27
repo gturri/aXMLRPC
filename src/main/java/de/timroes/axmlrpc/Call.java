@@ -57,11 +57,11 @@ public class Call {
 		methodCall.addChildren(methodName);
 
 		if(params != null && params.length > 0) {
-			XmlElement params = new XmlElement(XMLRPCClient.PARAMS);
-			methodCall.addChildren(params);
+			XmlElement callParams = new XmlElement(XMLRPCClient.PARAMS);
+			methodCall.addChildren(callParams);
 
 			for(Object o : this.params) {
-				params.addChildren(getXMLParam(o));
+				callParams.addChildren(getXMLParam(o));
 			}
 		}
 
