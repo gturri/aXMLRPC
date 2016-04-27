@@ -114,7 +114,7 @@ public class SerializerHandler {
 		// Grep type element from inside value element
 		element = XMLUtil.getOnlyChildElement(element.getChildNodes());
 
-		Serializer s = null;
+		Serializer s;
 
 		String type;
 
@@ -169,7 +169,7 @@ public class SerializerHandler {
 	 */
 	public XmlElement serialize(Object object) throws XMLRPCException {
 
-		Serializer s = null;
+		Serializer s;
 
 		if((flags & XMLRPCClient.FLAGS_NIL) != 0 && object == null) {
 			s = nil;
