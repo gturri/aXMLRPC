@@ -3,12 +3,28 @@ package de.timroes.axmlrpc.serializer;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.TimeZone;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import de.timroes.axmlrpc.xmlcreator.XmlElement;
 
 public class TestSerializers {
+	private TimeZone _previousTZ;
+
+	@Before
+	public void setUp(){
+		_previousTZ = TimeZone.getDefault();
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+	}
+
+	@After
+	public void tearDown(){
+		TimeZone.setDefault(_previousTZ);
+	}
+
 
 	@Test
 	public void canSerializeBase64(){
