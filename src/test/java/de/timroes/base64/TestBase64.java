@@ -1,4 +1,4 @@
-package de.timeroes.base64;
+package de.timroes.base64;
 
 import static org.junit.Assert.*;
 

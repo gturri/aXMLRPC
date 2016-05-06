@@ -1,4 +1,4 @@
-package de.timeroes.axmlrpc;
+package de.timroes.axmlrpc;
 
 import java.net.URL;
 
