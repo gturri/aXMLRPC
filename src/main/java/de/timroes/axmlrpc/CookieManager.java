@@ -62,7 +62,7 @@ class CookieManager {
 		// Extract every Set-Cookie field and put the cookie to the cookies map.
 		for(int i = 0; i < http.getHeaderFields().size(); i++) {
 			key = http.getHeaderFieldKey(i);
-			if(key != null && SET_COOKIE.toLowerCase().equals(key.toLowerCase())) {
+			if(key != null && SET_COOKIE.equalsIgnoreCase(key.toLowerCase())) {
 				cookie = http.getHeaderField(i).split(";")[0];
 				split = cookie.split("=");
 				if(split.length >= 2)
