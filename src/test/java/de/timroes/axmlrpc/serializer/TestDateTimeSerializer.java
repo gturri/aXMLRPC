@@ -122,7 +122,6 @@ public class TestDateTimeSerializer {
 
 	private void assertDeserializeEquals(Date expected, String toDeserialize) throws Exception {
 		Date date = (Date) new DateTimeSerializer().deserialize(toDeserialize);
-		long diffMs = date.getTime() - expected.getTime();
 		assertEquals(expected, date);
 	}
 }
