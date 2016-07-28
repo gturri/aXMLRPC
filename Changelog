@@ -1,3 +1,4 @@
+Remove FLAGS_SSL_IGNORE_INVALID_CERT and FLAGS_SSL_IGNORE_ERRORS to restore Google play compatibility (see #61)
 
 1.9.0
 Add FLAGS_DEBUG to display the xml returned by the server

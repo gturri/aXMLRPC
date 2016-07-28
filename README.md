@@ -112,6 +112,33 @@ long id = client.callAsync(listener, "method", params);
 client.cancel(id);
 ```
 
+#### Ignoring invalid SSL certificates
+
+You can set an ad hoc trust manager that accepts everything.
+
+```java
+XMLRPCClient client = new XMLRPCClient(url);
+TrustManager trustManager = new X509TrustManager() {
+	public void checkClientTrusted(X509Certificate[] xcs, String string)
+			throws CertificateException { }
+
+	public void checkServerTrusted(X509Certificate[] xcs, String string)
+			throws CertificateException { }
+
+	public X509Certificate[] getAcceptedIssuers() {
+		return null;
+	}
+};
+client.installCustomTrustManager(trustManager);
+```
+
+Note that up to v1.9.0, aXMLRPC provided some flags to ease this. They have been removed due to Google Play
+limitations (see #61).
+If you used:
+
+* FLAGS_SSL_IGNORE_INVALID_CERT, then remove it and use the trick above
+* FLAGS_SSL_IGNORE_ERRORS, then replace it with FLAGS_SSL_IGNORE_INVALID_HOST, and use the trick above
+
 The data types
 --------------
 
@@ -206,14 +233,6 @@ the SSL Certificate. This should be used with caution. Normally the URL
 should always match the URL in the SSL certificate, even with self signed
 certificates.
 
-
-#### FLAGS_SSL_INGORE_INVALID_CERT
-
-With this flag enabled, the client will ignore all unverified SSL/TLS 
-certificates. This must be used, if you use self-signed certificates
-or certificated from unknown (or untrusted) authorities.
-
-
 #### FLAGS_DEFAULT_TYPE_STRING
 
 With this flag enabled, a value with a missing type tag, will be parsed
@@ -255,13 +274,6 @@ collection of different other flags. There is no functional difference in using
 a meta flag or all the containing flags. For detailed documentation on the single
 flags read the above section.
 
-
-#### FLAGS_SSL_IGNORE_ERRORS
-
-This flag disables all SSL warnings. It is an alternative to use
-FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST.
-
-
 #### FLAGS_APACHE_WS
 
 This flag should be used if the server is an apache ws xmlrpc server.
@@ -269,6 +281,9 @@ This will set some flags, so that the not standard conform behavior
 of the server will be ignored.
 This will enable the following flags: FLAGS_IGNORE_NAMESPACES, FLAGS_NIL,
 FLAGS_DEFAULT_TYPE_STRING
+
+FAQ
+===
 
 
 License
