@@ -21,8 +21,8 @@ public class TestResponseParser {
 		XMLRPCClient client = new XMLRPCClient(server.url("/"));
 		server.enqueue(new MockResponse().setBody(buildBody("<value><string>toto</string></value>")));
 
-		Object response = client.call(METHOD);
-		assertThat(response).isEqualTo("toto");
+		XMLRPCResponse response = client.call(METHOD);
+		assertThat(response.getBody()).isEqualTo("toto");
 
 		RecordedRequest request = server.takeRequest();
 		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
@@ -33,8 +33,8 @@ public class TestResponseParser {
 		XMLRPCClient client = new XMLRPCClient(server.url("/"), XMLRPCClient.FLAGS_DEFAULT_TYPE_STRING);
 		server.enqueue(new MockResponse().setBody(buildBody("<value>toto</value>")));
 
-		Object response = client.call(METHOD);
-		assertThat(response).isEqualTo("toto");
+		XMLRPCResponse response = client.call(METHOD);
+		assertThat(response.getBody()).isEqualTo("toto");
 
 		RecordedRequest request = server.takeRequest();
 		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
@@ -45,8 +45,8 @@ public class TestResponseParser {
 		XMLRPCClient client = new XMLRPCClient(server.url("/"));
 		server.enqueue(new MockResponse().setBody(buildBody("<value><i4>32</i4></value>")));
 
-		Object response = client.call(METHOD);
-		assertThat(response).isEqualTo(32);
+		XMLRPCResponse response = client.call(METHOD);
+		assertThat(response.getBody()).isEqualTo(32);
 
 		RecordedRequest request = server.takeRequest();
 		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
@@ -55,7 +55,7 @@ public class TestResponseParser {
 		server.enqueue(new MockResponse().setBody(buildBody("<value><int>33</int></value>")));
 
 		response = client.call(METHOD);
-		assertThat(response).isEqualTo(33);
+		assertThat(response.getBody()).isEqualTo(33);
 
 		request = server.takeRequest();
 		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
@@ -66,8 +66,8 @@ public class TestResponseParser {
 		XMLRPCClient client = new XMLRPCClient(server.url("/"));
 		server.enqueue(new MockResponse().setBody(buildBody("<value><boolean>1</boolean></value>")));
 
-		Object response = client.call(METHOD);
-		assertThat(response).isEqualTo(true);
+		XMLRPCResponse response = client.call(METHOD);
+		assertThat(response.getBody()).isEqualTo(true);
 
 		RecordedRequest request = server.takeRequest();
 		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
@@ -76,7 +76,7 @@ public class TestResponseParser {
 		server.enqueue(new MockResponse().setBody(buildBody("<value><boolean>0</boolean></value>")));
 
 		response = client.call(METHOD);
-		assertThat(response).isEqualTo(false);
+		assertThat(response.getBody()).isEqualTo(false);
 
 		request = server.takeRequest();
 		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
@@ -90,7 +90,6 @@ public class TestResponseParser {
 	private String buildRequestBody(String method) {
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<methodCall>\n<methodName>"
 				+ method
-				+ "</methodName>\n"
-				+ "</methodCall>\n";
+				+ "</methodName>\n</methodCall>\n";
 	}
 }

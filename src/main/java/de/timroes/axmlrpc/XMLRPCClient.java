@@ -2,9 +2,7 @@ package de.timroes.axmlrpc;
 
 import de.timroes.axmlrpc.serializer.SerializerHandler;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -130,8 +128,6 @@ public class XMLRPCClient {
 	private HttpUrl url;
 	private OkHttpClient client;
 
-	private Map<Long,Caller> backgroundCalls = new ConcurrentHashMap<Long, Caller>();
-
 	private ResponseParser responseParser;
 
 	/**
@@ -213,6 +209,16 @@ public class XMLRPCClient {
 	}
 
 	/**
+	 * Checks whether a specific flag has been set.
+	 *
+	 * @param flag The flag to check for.
+	 * @return Whether the flag has been set.
+	 */
+	private boolean isFlagSet(int flag) {
+		return (this.flags & flag) != 0;
+	}
+
+	/**
 	 * Call a remote procedure on the server. The method must be described by
 	 * a method name. If the method requires parameters, this must be set.
 	 * The type of the return object depends on the server. You should consult
@@ -226,8 +232,10 @@ public class XMLRPCClient {
 	 * @return The result of the server.
 	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 	 */
-	public Object call(String method, Object... params) throws XMLRPCException {
-		return new Caller().call(method, params);
+	public XMLRPCResponse call(String method, Object... params) throws XMLRPCException, IOException {
+		Request request = createRequest(null, method, params);
+		Response response = client.newCall(request).execute();
+		return parseResponse(response);
 	}
 
 	/**
@@ -240,40 +248,69 @@ public class XMLRPCClient {
 	 * request. All listener methods get this id as a parameter to distinguish between
 	 * multiple requests.
 	 *
-	 * @param listener A listener, which will be notified about the server response or errors.
+	 * @param tag        A tag for the request. This is passed to the callback. See also {@link #cancel(Object)}.
+	 * @param listener   A listener, which will be notified about the server response or errors.
 	 * @param methodName A method name to call on the server.
-	 * @param params An array of parameters for the method.
-	 * @return The id of the current request.
+	 * @param params     An array of parameters for the method.
 	 */
-	public long callAsync(XMLRPCCallback listener, String methodName, Object... params) {
-		long id = System.currentTimeMillis();
-		new Caller(listener, id, methodName, params).start();
-		return id;
+	public void callAsync(final Object tag, final XMLRPCCallback listener, String methodName, Object... params) {
+		try {
+			Request request = createRequest(tag, methodName, params);
+
+			client.newCall(request).enqueue(new Callback() {
+				@Override
+				public void onFailure(okhttp3.Call call, IOException e) {
+					listener.onError(tag, e);
+				}
+
+				@Override
+				public void onResponse(okhttp3.Call call, Response response) throws IOException {
+					try {
+						XMLRPCResponse xmlrpcResponse = parseResponse(response);
+						listener.onResponse(tag, xmlrpcResponse);
+					} catch (XMLRPCException e) {
+						listener.onError(tag, e);
+					}
+				}
+			});
+		} catch (XMLRPCException e) {
+			listener.onError(tag, e);
+		}
+	}
+
+	private Request createRequest(Object tag, String methodName, Object... params) throws XMLRPCException {
+		Call c = createCall(methodName, params);
+		RequestBody body = RequestBody.create(MEDIA_TYPE_XML, c.getXML(isFlagSet(FLAGS_DEBUG)));
+
+		return new Request.Builder().url(url).post(body).tag(tag).build();
+	}
+
+	private XMLRPCResponse parseResponse(Response response) throws XMLRPCException {
+		if (isFlagSet(FLAGS_IGNORE_STATUSCODE) || response.isSuccessful()) {
+
+			// Check for strict parameters
+			if (isFlagSet(FLAGS_STRICT) && !response.headers().get(CONTENT_TYPE).startsWith(TYPE_XML)) {
+				throw new XMLRPCException("The Content-Type of the response must be text/xml.");
+			}
+
+			Object responseBody = responseParser.parse(response.body().byteStream(), isFlagSet(FLAGS_DEBUG));
+
+			return new XMLRPCResponse(response, responseBody);
+		}
+
+		return new XMLRPCResponse(response, null);
 	}
 
 	/**
 	 * Cancel a specific asynchronous call.
-	 *
-	 * @param id The id of the call as returned by the callAsync method.
 	 */
-	public void cancel(long id) {
-
-		// Lookup the background call for the given id.
-		Caller cancel = backgroundCalls.get(id);
-		if(cancel == null) {
-			return;
+	public void cancel(Object tag) {
+		for (okhttp3.Call call : client.dispatcher().queuedCalls()) {
+			if (tag.equals(call.request().tag())) call.cancel();
 		}
-
-		// Cancel the thread
-		cancel.cancel();
-
-		try {
-			// Wait for the thread
-			cancel.join();
-		} catch (InterruptedException ex) {
-			// Ignore this
+		for (okhttp3.Call call : client.dispatcher().runningCalls()) {
+			if (tag.equals(call.request().tag())) call.cancel();
 		}
-
 	}
 
 	/**
@@ -284,144 +321,10 @@ public class XMLRPCClient {
 	 * @return A call object.
 	 */
 	private Call createCall(String method, Object[] params) {
-
-		if(isFlagSet(FLAGS_STRICT) && !method.matches("^[A-Za-z0-9\\._:/]*$")) {
+		if (isFlagSet(FLAGS_STRICT) && !method.matches("^[A-Za-z0-9\\._:/]*$")) {
 			throw new XMLRPCRuntimeException("Method name must only contain A-Z a-z . : _ / ");
 		}
 
 		return new Call(method, params);
-
 	}
-
-	/**
-	 * Checks whether a specific flag has been set.
-	 *
-	 * @param flag The flag to check for.
-	 * @return Whether the flag has been set.
-	 */
-	private boolean isFlagSet(int flag) {
-		return (this.flags & flag) != 0;
-	}
-
-	/**
-	 * The Caller class is used to make asynchronous calls to the server.
-	 * For synchronous calls the Thread function of this class isn't used.
-	 */
-	private class Caller extends Thread {
-
-		private XMLRPCCallback listener;
-		private long threadId;
-		private String methodName;
-		private Object[] params;
-
-		private volatile boolean canceled;
-		private HttpURLConnection http;
-
-		/**
-		 * Create a new Caller for asynchronous use.
-		 *
-		 * @param listener The listener to notice about the response or an error.
-		 * @param threadId An id that will be send to the listener.
-		 * @param methodName The method name to call.
-		 * @param params The parameters of the call or null.
-		 */
-		public Caller(XMLRPCCallback listener, long threadId, String methodName, Object[] params) {
-			this.listener = listener;
-			this.threadId = threadId;
-			this.methodName = methodName;
-			this.params = params;
-		}
-
-		/**
-		 * Create a new Caller for synchronous use.
-		 * If the caller has been created with this constructor you cannot use the
-		 * start method to start it as a thread. But you can call the call method
-		 * on it for synchronous use.
-		 */
-		public Caller() { }
-
-		/**
-		 * The run method is invoked when the thread gets started.
-		 * This will only work, if the Caller has been created with parameters.
-		 * It execute the call method and notify the listener about the result.
-		 */
-		@Override
-		public void run() {
-
-			if(listener == null)
-				return;
-
-			try {
-				backgroundCalls.put(threadId, this);
-				Object o = this.call(methodName, params);
-				listener.onResponse(threadId, o);
-			} catch(CancelException ex) {
-				// Don't notify the listener, if the call has been canceled.
-			} catch(XMLRPCServerException ex) {
-				listener.onServerError(threadId, ex);
-			} catch (XMLRPCException ex) {
-				listener.onError(threadId, ex);
-			} finally {
-				backgroundCalls.remove(threadId);
-			}
-
-		}
-
-		/**
-		 * Cancel this call. This will abort the network communication.
-		 */
-		public void cancel() {
-			// Set the flag, that this thread has been canceled
-			canceled = true;
-			// Disconnect the connection to the server
-			http.disconnect();
-		}
-
-		/**
-		 * Call a remote procedure on the server. The method must be described by
-		 * a method name. If the method requires parameters, this must be set.
-		 * The type of the return object depends on the server. You should consult
-		 * the server documentation and then cast the return value according to that.
-		 * This method will block until the server returned a result (or an error occurred).
-		 * Read the README file delivered with the source code of this library for more
-		 * information.
-		 *
-		 * @param methodName A method name to call.
-		 * @param params An array of parameters for the method.
-		 * @return The result of the server.
-		 * @throws XMLRPCException Will be thrown if an error occurred during the call.
-		 */
-		public Object call(String methodName, Object[] params) throws XMLRPCException {
-			try {
-				Call c = createCall(methodName, params);
-				RequestBody body = RequestBody.create(MEDIA_TYPE_XML, c.getXML(isFlagSet(FLAGS_DEBUG)));
-				Request request = new Request.Builder().url(url).post(body).build();
-
-				Response response = client.newCall(request).execute();
-
-				if (isFlagSet(FLAGS_IGNORE_STATUSCODE) || response.isSuccessful()) {
-					// Check for strict parameters
-					if (isFlagSet(FLAGS_STRICT) && !response.headers().get(CONTENT_TYPE).startsWith(TYPE_XML)) {
-						throw new XMLRPCException("The Content-Type of the response must be text/xml.");
-					}
-
-					return responseParser.parse(response.body().byteStream(), isFlagSet(FLAGS_DEBUG));
-				} else {
-					throw new XMLRPCException("Request failed with status code " + response.code());
-				}
-			} catch (IOException ex) {
-				// If the thread has been canceled this exception will be thrown.
-				// So only throw an exception if the thread hasnt been canceled
-				// or if the thred has not been started in background.
-				if(!canceled || threadId <= 0) {
-					throw new XMLRPCException(ex);
-				} else {
-					throw new CancelException();
-				}
-			}
-		}
-	}
-
-	private class CancelException extends RuntimeException { }
-
 }
