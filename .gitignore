@@ -1,8 +1,18 @@
 nbproject/
-build/
 dist/
-.gradle/
 /.nb-gradle/private/
 target
 .classpath
 .project
+
+# Gradle
+.gradle
+local.properties
+build
+
+# IntelliJ IDEA
+.idea
+*.iml
+
+# OSX
+.DS_Store
