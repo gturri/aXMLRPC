@@ -235,7 +235,7 @@ proxy to connect to the XML-RPC server.
 By default outgoing string values will be encoded according to specification.
 Meaning the & sign will be encoded to `&amp;` and the "less then" sign to `&lt;`.
 If you set this flag, the encoding won't be done for outgoing string values.
-See `FLAGS_NO_STRING_ENCODE` for the counterpart.
+See `FLAGS_NO_STRING_DECODE` for the counterpart.
 
 
 #### FLAGS_NO_STRING_DECODE
