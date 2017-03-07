@@ -30,7 +30,10 @@ public class StringSerializer implements Serializer {
 	public XmlElement serialize(Object object) {
 		String content = object.toString();
 		if(encodeStrings) {
-			content = content.replaceAll("&", "&amp;").replaceAll("<", "&lt;");
+			content = content
+					.replaceAll("&", "&amp;")
+					.replaceAll("<", "&lt;")
+					.replaceAll("]]>", "]]&gt;");
 		}
 		return XMLUtil.makeXmlTag(SerializerHandler.TYPE_STRING, content);
 	}

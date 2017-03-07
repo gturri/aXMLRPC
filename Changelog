@@ -1,3 +1,4 @@
+Fix serialization of the sequence ']]>'
 
 1.9.0
 Add FLAGS_DEBUG to display the xml returned by the server

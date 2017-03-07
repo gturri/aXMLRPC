@@ -72,6 +72,13 @@ public class TestSerializers {
 		assertExpectedSerialized("<string>te<&>st</string>", new StringSerializer(encodeString, true).serialize("te<&>st"));
 	}
 
+	@Test
+	public void canSerializeStringWithCdataClosing(){
+		boolean encodeString = true;
+		XmlElement serialized = new StringSerializer(encodeString, true).serialize("[ ]]>");
+		assertFalse("encoded string shouldn't contain ]]> since it's reserved for CData", serialized.toString().contains("]]>"));
+	}
+
 	private static void assertExpectedSerialized(String expected, XmlElement actual){
 		assertEquals(expected, actual.toString().trim());
 	}
