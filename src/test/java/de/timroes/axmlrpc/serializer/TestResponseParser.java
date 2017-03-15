@@ -1,68 +1,95 @@
 package de.timroes.axmlrpc;
 
-import java.net.URL;
-
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import org.junit.Rule;
 import org.junit.Test;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.Assert.*;
-
-import org.junit.Rule;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-
-import de.timroes.axmlrpc.XMLRPCClient;
+import static com.google.common.truth.Truth.assertThat;
 
 public class TestResponseParser {
-	private final int port = 8080;
-	private final String endPoint = "/dummyEndPoint";
 
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(port);
+	@Rule public final MockWebServer server = new MockWebServer();
 
-	@Test
-	public void canParseString() throws Exception {
-		setMockWithXmlRpcContent("<value><string>toto</string></value>");
-		assertEquals("toto", makeDummyCall());
+	static final String CONTENT_TYPE = "Content-Type";
+	static final String TYPE_XML = "text/xml; charset=utf-8";
+
+	static final String METHOD = "method";
+
+	@Test public void canParseString() throws Exception {
+		XMLRPCClient client = new XMLRPCClient(server.url("/"));
+		server.enqueue(new MockResponse().setBody(buildBody("<value><string>toto</string></value>")));
+
+		XMLRPCResponse response = client.call(METHOD);
+		assertThat(response.getBody()).isEqualTo("toto");
+
+		RecordedRequest request = server.takeRequest();
+		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
+		assertThat(request.getHeader(CONTENT_TYPE)).isEqualTo(TYPE_XML);
 	}
 
-	@Test
-	public void canParseAsStringWhenTypeIsntExplicitelyProvided() throws Exception {
-		setMockWithXmlRpcContent("<value>toto</value>");
-		assertEquals("toto", makeDummyCall(XMLRPCClient.FLAGS_DEFAULT_TYPE_STRING));
+	@Test public void canParseAsStringWhenTypeIsntExplicitelyProvided() throws Exception {
+		XMLRPCClient client = new XMLRPCClient(server.url("/"), XMLRPCClient.FLAGS_DEFAULT_TYPE_STRING);
+		server.enqueue(new MockResponse().setBody(buildBody("<value>toto</value>")));
+
+		XMLRPCResponse response = client.call(METHOD);
+		assertThat(response.getBody()).isEqualTo("toto");
+
+		RecordedRequest request = server.takeRequest();
+		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
+		assertThat(request.getHeader(CONTENT_TYPE)).isEqualTo(TYPE_XML);
 	}
 
-	@Test
-	public void canParseInt() throws Exception {
-		setMockWithXmlRpcContent("<value><i4>32</i4></value>");
-		assertEquals(32, makeDummyCall());
+	@Test public void canParseInt() throws Exception {
+		XMLRPCClient client = new XMLRPCClient(server.url("/"));
+		server.enqueue(new MockResponse().setBody(buildBody("<value><i4>32</i4></value>")));
 
-		setMockWithXmlRpcContent("<value><int>33</int></value>");
-		assertEquals(33, makeDummyCall());
+		XMLRPCResponse response = client.call(METHOD);
+		assertThat(response.getBody()).isEqualTo(32);
+
+		RecordedRequest request = server.takeRequest();
+		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
+		assertThat(request.getHeader(CONTENT_TYPE)).isEqualTo(TYPE_XML);
+
+		server.enqueue(new MockResponse().setBody(buildBody("<value><int>33</int></value>")));
+
+		response = client.call(METHOD);
+		assertThat(response.getBody()).isEqualTo(33);
+
+		request = server.takeRequest();
+		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
+		assertThat(request.getHeader(CONTENT_TYPE)).isEqualTo(TYPE_XML);
 	}
 
-	@Test
-	public void canParseBoolean() throws Exception {
-		setMockWithXmlRpcContent("<value><boolean>1</boolean></value>");
-		assertEquals(true, makeDummyCall());
+	@Test public void canParseBoolean() throws Exception {
+		XMLRPCClient client = new XMLRPCClient(server.url("/"));
+		server.enqueue(new MockResponse().setBody(buildBody("<value><boolean>1</boolean></value>")));
 
-		setMockWithXmlRpcContent("<value><boolean>0</boolean></value>");
-		assertEquals(false, makeDummyCall());
+		XMLRPCResponse response = client.call(METHOD);
+		assertThat(response.getBody()).isEqualTo(true);
+
+		RecordedRequest request = server.takeRequest();
+		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
+		assertThat(request.getHeader(CONTENT_TYPE)).isEqualTo(TYPE_XML);
+
+		server.enqueue(new MockResponse().setBody(buildBody("<value><boolean>0</boolean></value>")));
+
+		response = client.call(METHOD);
+		assertThat(response.getBody()).isEqualTo(false);
+
+		request = server.takeRequest();
+		assertThat(request.getBody().readUtf8()).isEqualTo(buildRequestBody(METHOD));
+		assertThat(request.getHeader(CONTENT_TYPE)).isEqualTo(TYPE_XML);
 	}
 
-	private void setMockWithXmlRpcContent(String content){
-		stubFor(post(urlEqualTo(endPoint))
-				.willReturn(aResponse()
-						.withStatus(200)
-						.withBody("<methodResponse><params><param>" + content + "</param></params></methodResponse>")
-						));
+	private String buildBody(String body) {
+		return "<methodResponse><params><param>" + body + "</param></params></methodResponse>";
 	}
 
-	private Object makeDummyCall() throws Exception {
-		return makeDummyCall(XMLRPCClient.FLAGS_NONE);
-	}
-
-	private Object makeDummyCall(int flags) throws Exception {
-		return new XMLRPCClient(new URL("http://localhost:" + port + endPoint), flags).call("dummy_method");
+	private String buildRequestBody(String method) {
+		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<methodCall>\n<methodName>"
+				+ method
+				+ "</methodName>\n</methodCall>\n";
 	}
 }

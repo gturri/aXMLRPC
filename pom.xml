@@ -38,59 +38,27 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.google.truth</groupId>
+			<artifactId>truth</artifactId>
+			<version>0.28</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>fr.turri</groupId>
 			<artifactId>jISO8601</artifactId>
 			<version>0.2</version>
 		</dependency>
-        <dependency>
-          <groupId>com.github.tomakehurst</groupId>
-          <artifactId>wiremock</artifactId>
-          <version>1.58</version>
-          <scope>test</scope>
-          <classifier>standalone</classifier>
-          <exclusions>
-            <exclusion>
-              <groupId>org.mortbay.jetty</groupId>
-              <artifactId>jetty</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>com.google.guava</groupId>
-              <artifactId>guava</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>com.fasterxml.jackson.core</groupId>
-              <artifactId>jackson-core</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>com.fasterxml.jackson.core</groupId>
-              <artifactId>jackson-annotations</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>com.fasterxml.jackson.core</groupId>
-              <artifactId>jackson-databind</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>org.apache.httpcomponents</groupId>
-              <artifactId>httpclient</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>org.skyscreamer</groupId>
-              <artifactId>jsonassert</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>xmlunit</groupId>
-              <artifactId>xmlunit</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>com.jayway.jsonpath</groupId>
-              <artifactId>json-path</artifactId>
-            </exclusion>
-            <exclusion>
-              <groupId>net.sf.jopt-simple</groupId>
-              <artifactId>jopt-simple</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>mockwebserver</artifactId>
+			<version>3.4.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<scm>
         <connection>scm:git:https://github.com/gturri/aXMLRPC.git</connection>
