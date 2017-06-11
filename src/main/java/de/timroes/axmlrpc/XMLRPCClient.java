@@ -668,7 +668,7 @@ public class XMLRPCClient {
 					// Due to a bug on android, the getResponseCode()-method will
 					// fail the first time, with a IOException, when 401 or 403 has been returned.
 					// The second time it should success. If it fail the second time again
-					// the normal exceptipon handling can take care of this, since
+					// the normal exception handling can take care of this, since
 					// it is a real error.
 					statusCode = http.getResponseCode();
 				}
