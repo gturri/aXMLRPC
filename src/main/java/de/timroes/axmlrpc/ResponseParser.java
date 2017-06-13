@@ -39,7 +39,7 @@ class ResponseParser {
 	 * @throws XMLRPCException Will be thrown whenever something fails.
 	 * @throws XMLRPCServerException Will be thrown, if the server returns an error.
 	 */
-	public Object parse(InputStream response, boolean debugMode) throws XMLRPCException {
+	public Object parse(SerializerHandler serializerHandler, InputStream response, boolean debugMode) throws XMLRPCException {
 
 		try {
 
@@ -68,12 +68,12 @@ class ResponseParser {
 					throw new XMLRPCException("The params tag must contain a param tag.");
 				}
 
-				return getReturnValueFromElement(e);
+				return getReturnValueFromElement(serializerHandler, e);
 
 			} else if(e.getNodeName().equals(XMLRPCClient.FAULT)) {
 
 				@SuppressWarnings("unchecked")
-				Map<String,Object> o = (Map<String,Object>)getReturnValueFromElement(e);
+				Map<String,Object> o = (Map<String,Object>)getReturnValueFromElement(serializerHandler, e);
 
 				throw new XMLRPCServerException((String)o.get(FAULT_STRING), (Integer)o.get(FAULT_CODE));
 
@@ -111,12 +111,11 @@ class ResponseParser {
 	 * @throws XMLRPCException Will be thrown when the structure of the document
 	 *		doesn't match the XML-RPC specification.
 	 */
-	private Object getReturnValueFromElement(Element element) throws XMLRPCException {
+	private Object getReturnValueFromElement(SerializerHandler serializerHandler, Element element) throws XMLRPCException {
 
 		Element childElement = XMLUtil.getOnlyChildElement(element.getChildNodes());
 
-		return SerializerHandler.getDefault().deserialize(childElement);
-
+		return serializerHandler.deserialize(childElement);
 	}
 
 }

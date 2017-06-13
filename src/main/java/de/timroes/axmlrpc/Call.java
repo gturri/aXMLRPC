@@ -1,5 +1,6 @@
 package de.timroes.axmlrpc;
 
+import de.timroes.axmlrpc.serializer.Serializer;
 import de.timroes.axmlrpc.serializer.SerializerHandler;
 import de.timroes.axmlrpc.xmlcreator.SimpleXMLCreator;
 import de.timroes.axmlrpc.xmlcreator.XmlElement;
@@ -16,13 +17,14 @@ public class Call {
 
 	private String method;
 	private Object[] params;
+	private final SerializerHandler serializerHandler;
 
 	/**
 	 * Create a new method call with the given name and no parameters.
 	 * @param method The method to be called.
 	 */
-	public Call(String method) {
-		this(method, null);
+	public Call(SerializerHandler serializerHandler, String method) {
+		this(serializerHandler, method, null);
 	}
 
 	/**
@@ -30,9 +32,10 @@ public class Call {
 	 * @param method The method to be called.
 	 * @param params An array of parameters for the method.
 	 */
-	public Call(String method, Object[] params) {
+	public Call(SerializerHandler serializerHandler, String method, Object[] params) {
 		this.method = method;
 		this.params = params;
+		this.serializerHandler = serializerHandler;
 	}
 
 	/**
@@ -85,7 +88,7 @@ public class Call {
 		XmlElement param = new XmlElement(XMLRPCClient.PARAM);
 		XmlElement value = new XmlElement(XMLRPCClient.VALUE);
 		param.addChildren(value);
-		value.addChildren(SerializerHandler.getDefault().serialize(o));
+		value.addChildren(serializerHandler.serialize(o));
 		return param;
 	}
 

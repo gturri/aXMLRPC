@@ -19,6 +19,12 @@ public class StructSerializer implements Serializer {
 	private static final String STRUCT_NAME = "name";
 	private static final String STRUCT_VALUE = "value";
 
+	private final SerializerHandler serializerHandler;
+
+	public StructSerializer(SerializerHandler serializerHandler) {
+		this.serializerHandler = serializerHandler;
+	}
+
 	public Object deserialize(Element content) throws XMLRPCException {
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -62,7 +68,7 @@ public class StructSerializer implements Serializer {
 					if(o != null) {
 						throw new XMLRPCException("Value of a struct member cannot be set twice.");
 					} else {
-						o = SerializerHandler.getDefault().deserialize((Element)m);
+						o = serializerHandler.deserialize((Element)m);
 					}
 				} else {
 					throw new XMLRPCException("A struct member must only contain one name and one value.");
@@ -96,7 +102,7 @@ public class StructSerializer implements Serializer {
 				name = new XmlElement(STRUCT_NAME);
 				value = new XmlElement(STRUCT_VALUE);
 				name.setContent(member.getKey());
-				value.addChildren(SerializerHandler.getDefault().serialize(member.getValue()));
+				value.addChildren(serializerHandler.serialize(member.getValue()));
 				entry.addChildren(name);
 				entry.addChildren(value);
 				struct.addChildren(entry);

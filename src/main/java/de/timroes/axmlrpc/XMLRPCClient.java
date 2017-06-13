@@ -192,6 +192,7 @@ public class XMLRPCClient {
 	private Proxy proxy;
 
 	private int timeout;
+	private final SerializerHandler serializerHandler;
 
 	/**
 	 * Create a new XMLRPC client for the given URL.
@@ -202,7 +203,7 @@ public class XMLRPCClient {
 	 */
 	public XMLRPCClient(URL url, String userAgent, int flags) {
 
-		SerializerHandler.initialize(flags);
+		this.serializerHandler = new SerializerHandler(flags);
 
 		this.url = url;
 
@@ -520,8 +521,7 @@ public class XMLRPCClient {
 			throw new XMLRPCRuntimeException("Method name must only contain A-Z a-z . : _ / ");
 		}
 
-		return new Call(method, params);
-
+		return new Call(serializerHandler, method, params);
 	}
 
 	/**
@@ -617,7 +617,7 @@ public class XMLRPCClient {
 		 * Read the README file delivered with the source code of this library for more
 		 * information.
 		 *
-		 * @param method A method name to call.
+		 * @param methodName A method name to call.
 		 * @param params An array of parameters for the method.
 		 * @return The result of the server.
 		 * @throws XMLRPCException Will be thrown if an error occurred during the call.
@@ -739,7 +739,7 @@ public class XMLRPCClient {
 
 				cookieManager.readCookies(http);
 
-				return responseParser.parse(istream, isFlagSet(FLAGS_DEBUG));
+				return responseParser.parse(serializerHandler, istream, isFlagSet(FLAGS_DEBUG));
 
 			} catch(SocketTimeoutException ex) {
 				throw new XMLRPCTimeoutException("The XMLRPC call timed out.");

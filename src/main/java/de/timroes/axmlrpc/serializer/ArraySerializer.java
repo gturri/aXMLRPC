@@ -18,6 +18,11 @@ public class ArraySerializer implements Serializer {
 
 	private static final String ARRAY_DATA = "data";
 	private static final String ARRAY_VALUE = "value";
+	private final SerializerHandler serializerHandler;
+
+	public ArraySerializer(SerializerHandler serializerHandler){
+		this.serializerHandler = serializerHandler;
+	}
 
 	public Object deserialize(Element content) throws XMLRPCException {
 
@@ -45,7 +50,7 @@ public class ArraySerializer implements Serializer {
 				throw new XMLRPCException("Wrong element inside of array.");
 			}
 
-			list.add(SerializerHandler.getDefault().deserialize((Element)value));
+			list.add(serializerHandler.deserialize((Element)value));
 
 		}
 
@@ -69,7 +74,7 @@ public class ArraySerializer implements Serializer {
 			XmlElement e;
 			for(Object obj : iter) {
 				e = new XmlElement(ARRAY_VALUE);
-				e.addChildren(SerializerHandler.getDefault().serialize(obj));
+				e.addChildren(serializerHandler.serialize(obj));
 				data.addChildren(e);
 			}
 
