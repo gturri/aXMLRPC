@@ -1,3 +1,4 @@
+Tweaks to make it possible to use an arbitrary transport
 Fix potential race condition
 
 1.10.0

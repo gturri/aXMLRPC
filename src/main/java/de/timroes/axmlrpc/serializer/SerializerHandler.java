@@ -45,6 +45,10 @@ public class SerializerHandler {
 
 	private int flags;
 
+	public SerializerHandler(){
+		this(XMLRPCClient.FLAGS_DEBUG);
+	}
+
 	public SerializerHandler(int flags) {
 		this.flags = flags;
 		string = new StringSerializer(

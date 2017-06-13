@@ -270,6 +270,20 @@ of the server will be ignored.
 This will enable the following flags: FLAGS_IGNORE_NAMESPACES, FLAGS_NIL,
 FLAGS_DEFAULT_TYPE_STRING
 
+Using an arbitrary transport
+============================
+aXMLRPC uses http with the java.net API. If you want to use another protocol or API, you can do:
+
+```java
+    boolean debug = false;
+    SerializerHandler serializerHandler = new SerializerHandler(); // or you may build it with flags
+    String payload = new Call(serializerHandler, "add", 5, 10).getXML(debug);
+
+    InputStream istream = sendPayloadWithMyTransport(payload); // use your implementation here
+
+    Integer i = (Integer) new ResponseParser.parse(serializerHandler, istream, debug);
+```
+
 
 License
 =======

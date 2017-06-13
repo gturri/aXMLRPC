@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
  *
  * @author Tim Roes
  */
-class ResponseParser {
+public class ResponseParser {
 
 	private static final String FAULT_CODE = "faultCode";
 	private static final String FAULT_STRING = "faultString";
