@@ -45,7 +45,7 @@ public class TestSerializers {
 	@Test
 	public void canSerializeDate(){
 		assertExpectedSerialized("<dateTime.iso8601>19850503T122334</dateTime.iso8601>",
-				new DateTimeSerializer().serialize(new Date(85, 4, 3, 12, 23, 34)));
+				new DateTimeSerializer(false).serialize(new Date(85, 4, 3, 12, 23, 34)));
 	}
 
 	@Test

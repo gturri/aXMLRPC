@@ -247,6 +247,11 @@ won't be decoded to the & sign and the "less then" sign. See
 Will display additional information on the console.
 Do not use it in production.
 
+#### FLAGS_ACCEPT_NULL_DATE
+By default a response with an empty date (eg: `<value><dateTime.iso8601/></value>`)
+is invalid and hence throws an exception.
+With this flag, this input is accepted, and returns a null date
+
 Meta Flags
 ----------
 

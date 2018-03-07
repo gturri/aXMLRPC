@@ -74,7 +74,7 @@ public class TestDateTimeSerializer {
 
 	@Test
 	public void canParseMilliseconds() throws Exception {
-		Date ms500 = (Date) new DateTimeSerializer().deserialize("1985-03-04T12:21:36.5");
+		Date ms500 = (Date) new DateTimeSerializer(false).deserialize("1985-03-04T12:21:36.5");
 		assertEquals(500, ms500.getTime() - new Date(85, 2, 4, 12, 21, 36).getTime());
 	}
 
@@ -121,7 +121,7 @@ public class TestDateTimeSerializer {
 	}
 
 	private void assertDeserializeEquals(Date expected, String toDeserialize) throws Exception {
-		Date date = (Date) new DateTimeSerializer().deserialize(toDeserialize);
+		Date date = (Date) new DateTimeSerializer(false).deserialize(toDeserialize);
 		assertEquals(expected, date);
 	}
 }
