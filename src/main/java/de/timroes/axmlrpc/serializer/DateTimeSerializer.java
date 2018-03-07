@@ -24,6 +24,8 @@ public class DateTimeSerializer implements Serializer {
 	}
 
 	public Object deserialize(String dateStr) throws XMLRPCException {
+		if (dateStr==null || dateStr.trim().length()==0)
+			return null;
 		try {
 			return Iso8601Deserializer.toDate(dateStr);
 		} catch (Exception ex) {
