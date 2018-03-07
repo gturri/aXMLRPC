@@ -51,6 +51,24 @@ public class TestResponseParser {
 		assertEquals(false, makeDummyCall());
 	}
 
+	@Test
+	public void canParseDateTime() throws Exception {
+		setMockWithXmlRpcContent("<value><dateTime.iso8601>2018-03-06T06:21:20Z</dateTime.iso8601></value>");
+		assertEquals("Can parse normal datetime", new Date(118, 2, 6, 7,21,20), makeDummyCall());
+
+		setMockWithXmlRpcContent("<value><dateTime.iso8601/></value>");
+		assertNull("Should get null date because we use the flag to enable this behavior", makeDummyCall(XMLRPCClient.FLAGS_ACCEPT_NULL_DATES));
+
+		boolean didThrow = false;
+		setMockWithXmlRpcContent("<value><dateTime.iso8601/></value>");
+		try {
+			makeDummyCall(XMLRPCClient.FLAGS_NONE);
+		} catch(Exception e){
+			didThrow = true;
+		}
+		assertTrue("Should have thrown because date was empty and we used the default behavior", didThrow);
+	}
+
 	private void setMockWithXmlRpcContent(String content){
 		stubFor(post(urlEqualTo(endPoint))
 				.willReturn(aResponse()
@@ -65,14 +83,5 @@ public class TestResponseParser {
 
 	private Object makeDummyCall(int flags) throws Exception {
 		return new XMLRPCClient(new URL("http://localhost:" + port + endPoint), flags).call("dummy_method");
-	}
-
-	@Test
-	public void canParseDateTime() throws Exception {
-		setMockWithXmlRpcContent("<value><dateTime.iso8601>2018-03-06T06:21:20Z</dateTime.iso8601></value>");
-		assertEquals(new Date(118, 2, 6, 7,21,20), makeDummyCall());
-
-		setMockWithXmlRpcContent("<value><dateTime.iso8601/></value>");
-		assertNull(makeDummyCall());
 	}
 }

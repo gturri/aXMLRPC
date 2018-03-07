@@ -158,6 +158,11 @@ public class XMLRPCClient {
 	public static final int FLAGS_DEBUG = 0x2000;
 
 	/**
+	 * Accepts response containing eg: <dateTime.iso8601/>
+	 */
+	public static final int FLAGS_ACCEPT_NULL_DATES = 0x4000;
+
+	/**
 	 * This flag disables all SSL warnings. It is an alternative to use
 	 * FLAGS_SSL_IGNORE_INVALID_CERT | FLAGS_SSL_IGNORE_INVALID_HOST. There
 	 * is no functional difference.

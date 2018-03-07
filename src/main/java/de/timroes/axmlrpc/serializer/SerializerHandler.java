@@ -2,7 +2,6 @@ package de.timroes.axmlrpc.serializer;
 
 import de.timroes.axmlrpc.XMLRPCClient;
 import de.timroes.axmlrpc.XMLRPCException;
-import de.timroes.axmlrpc.XMLRPCRuntimeException;
 import de.timroes.axmlrpc.XMLUtil;
 import de.timroes.axmlrpc.xmlcreator.XmlElement;
 import java.math.BigDecimal;
@@ -38,7 +37,7 @@ public class SerializerHandler {
 	private LongSerializer long8 = new LongSerializer();
 	private StructSerializer struct;
 	private DoubleSerializer floating = new DoubleSerializer();
-	private DateTimeSerializer datetime = new DateTimeSerializer();
+	private DateTimeSerializer datetime;
 	private ArraySerializer array;
 	private Base64Serializer base64 = new Base64Serializer();
 	private NullSerializer nil = new NullSerializer();
@@ -57,6 +56,7 @@ public class SerializerHandler {
 		);
 		struct = new StructSerializer(this);
 		array = new ArraySerializer(this);
+		datetime = new DateTimeSerializer((flags & XMLRPCClient.FLAGS_ACCEPT_NULL_DATES) != 0);
 	}
 
 	/**
