@@ -2,6 +2,7 @@ package de.timroes.axmlrpc.serializer;
 
 import java.net.URL;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -53,8 +54,10 @@ public class TestResponseParser {
 
 	@Test
 	public void canParseDateTime() throws Exception {
+		java.util.TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
 		setMockWithXmlRpcContent("<value><dateTime.iso8601>2018-03-06T06:21:20Z</dateTime.iso8601></value>");
-		assertEquals("Can parse normal datetime", new Date(118, 2, 6, 7,21,20), makeDummyCall());
+		assertEquals("Can parse normal datetime", new Date(118, 2, 6, 6,21,20), makeDummyCall());
 
 		setMockWithXmlRpcContent("<value><dateTime.iso8601/></value>");
 		assertNull("Should get null date because we use the flag to enable this behavior", makeDummyCall(XMLRPCClient.FLAGS_ACCEPT_NULL_DATES));
