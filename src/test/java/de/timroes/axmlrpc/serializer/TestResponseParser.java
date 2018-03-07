@@ -1,4 +1,4 @@
-package de.timroes.axmlrpc;
+package de.timroes.axmlrpc.serializer;
 
 import java.net.URL;
 
