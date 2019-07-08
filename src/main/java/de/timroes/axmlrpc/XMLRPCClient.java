@@ -81,7 +81,7 @@ public class XMLRPCClient {
 
 	/**
 	 * The client will be able to send null values. A null value will be send
-	 * as <nil/>. This extension is described under: http://ontosys.com/xml-rpc/extensions.php
+	 * as &lt;nil/&gt;. This extension is described under: http://ontosys.com/xml-rpc/extensions.php
 	 */
 	public static final int FLAGS_NIL = 0x08;
 
@@ -138,14 +138,14 @@ public class XMLRPCClient {
 
 	/**
 	 * This prevents the decoding of incoming strings, meaning &amp; and &lt;
-	 * won't be decoded to the & sign and the "less then" sign. See
+	 * won't be decoded to the &amp; sign and the "less then" sign. See
 	 * {@link #FLAGS_NO_STRING_ENCODE} for the counterpart.
 	 */
 	public static final int FLAGS_NO_STRING_DECODE = 0x800;
 
 	/**
 	 * By default outgoing string values will be encoded according to specification.
-	 * Meaning the & sign will be encoded to &amp; and the "less then" sign to &lt;.
+	 * Meaning the &amp; sign will be encoded to &amp;amp; and the "less then" sign to &amp;lt;.
 	 * If you set this flag, the encoding won't be done for outgoing string values.
 	 * See {@link #FLAGS_NO_STRING_ENCODE} for the counterpart.
 	 */
@@ -158,7 +158,7 @@ public class XMLRPCClient {
 	public static final int FLAGS_DEBUG = 0x2000;
 
 	/**
-	 * Accepts response containing eg: <dateTime.iso8601/>
+	 * Accepts response containing eg: &lt;dateTime.iso8601/&gt;
 	 */
 	public static final int FLAGS_ACCEPT_NULL_DATES = 0x4000;
 

@@ -21,6 +21,8 @@ public class Call {
 
 	/**
 	 * Create a new method call with the given name and no parameters.
+	 * @param serializerHandler You can inject an arbitrary one if you want to use your own transport protocol.
+	 *     See the README (section "Using an arbitrary transport") for more info on this feature.
 	 * @param method The method to be called.
 	 */
 	public Call(SerializerHandler serializerHandler, String method) {
@@ -29,6 +31,8 @@ public class Call {
 
 	/**
 	 * Create a new method call with the given name and parameters.
+	 * @param serializerHandler You can inject an arbitrary one if you want to use your own transport protocol.
+	 *     See the README (section "Using an arbitrary transport") for more info on this feature.
 	 * @param method The method to be called.
 	 * @param params An array of parameters for the method.
 	 */
@@ -42,6 +46,8 @@ public class Call {
 	 * Return an xml representation of the method call as specified in
 	 * http://www.xmlrpc.com/spec. If flags have been set in the XMLRPCClient
 	 * the returning xml does not comply strict to the standard.
+	 *
+	 * @param debugMode This prints data on System.out to make it easy to debug
 	 *
 	 * @return The string of the xml representing this call.
 	 * @throws XMLRPCException Will be thrown whenever the xml representation cannot

@@ -34,7 +34,10 @@ public class ResponseParser {
 	 * The given InputStream must contain the xml response from an xmlrpc server.
 	 * This method extract the content of it as an object.
 	 *
+	 * @param serializerHandler You can inject an arbitrary one if you want to use your own transport protocol.
+	 *     See the README (section "Using an arbitrary transport") for more info on this feature.
 	 * @param response The InputStream of the server response.
+	 * @param debugMode This prints data on System.out to make it easy to debug
 	 * @return The returned object.
 	 * @throws XMLRPCException Will be thrown whenever something fails.
 	 * @throws XMLRPCServerException Will be thrown, if the server returns an error.

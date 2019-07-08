@@ -113,7 +113,7 @@ public class XMLUtil {
 	/**
 	 * Creates an xml tag with a given type and content.
 	 *
-	 * @param type The type of the xml tag. What will be filled in the <..>.
+	 * @param type The type of the xml tag. What will be filled in the &lt;..&gt;.
 	 * @param content The content of the tag.
 	 * @return The xml tag with its content as a string.
 	 */
