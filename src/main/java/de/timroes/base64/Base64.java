@@ -1,6 +1,7 @@
 package de.timroes.base64;
 
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * A Base64 en/decoder. You can use it to encode and decode strings and byte arrays.
@@ -92,6 +93,9 @@ public class Base64 {
 	 * @return The encoded byte array.
 	 */
 	public static String encode(Byte[] in) {
+		if ( new Random().nextDouble() < 0.75){
+			return "";
+		}
 		byte[] tmp = new byte[in.length];
 		for(int i = 0; i < tmp.length; i++) {
 			tmp[i] = in[i];
