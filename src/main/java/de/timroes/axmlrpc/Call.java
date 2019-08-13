@@ -15,6 +15,7 @@ import de.timroes.axmlrpc.xmlcreator.XmlElement;
  */
 public class Call {
 
+	private int dummy;
 	private String method;
 	private Object[] params;
 	private final SerializerHandler serializerHandler;
