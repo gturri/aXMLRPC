@@ -1,5 +1,3 @@
-Fix security issue CWE-611
-
 1.12.0
 Add flag ACCEPT_NULL_DATES
 

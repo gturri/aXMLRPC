@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -46,17 +45,9 @@ public class ResponseParser {
 	public Object parse(SerializerHandler serializerHandler, InputStream response, boolean debugMode) throws XMLRPCException {
 
 		try {
+
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
-			// Ensure the xml parser won't allow exploitation of the vuln CWE-611
-			// (described on https://cwe.mitre.org/data/definitions/611.html )
-			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-			factory.setExpandEntityReferences(false);
 			factory.setNamespaceAware(true);
-			factory.setXIncludeAware(false);
-			factory.setExpandEntityReferences(false);
-			// End of the configuration of the parser for CWE-611
-
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document dom = builder.parse(response);
 			if (debugMode ){
