@@ -72,7 +72,34 @@ public class TestResponseParser {
             assertEquals("error X occurred [4]", e.getMessage());
             assertEquals(4, e.getErrorNr());
         }
-}
+    }
+
+    @Test
+    public void testResponseWithXmlComment() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream("<methodResponse>" +
+                "  <params>" +
+                "    <param>" +
+                "      <!--value><string>toto</string></value-->" +
+                "      <value><string>tata</string></value>" +
+                "    </param>" +
+                "  </params>" +
+                "</methodResponse>"), false);
+        assertEquals("tata", actual);
+    }
+
+    @Test
+    public void testResponseWithSpecialChars() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream("<methodResponse>" +
+                "  <params>" +
+                "    <param>" +
+                "      <value><string>to&lt;to</string></value>" +
+                "    </param>" +
+                "  </params>" +
+                "</methodResponse>"), false);
+        assertEquals("to<to", actual);
+    }
 
     private static InputStream strToStream(String str){
         return new ByteArrayInputStream(str.getBytes());
