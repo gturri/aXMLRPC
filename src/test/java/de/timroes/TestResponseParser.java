@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import de.timroes.axmlrpc.ResponseParser;
 import de.timroes.axmlrpc.XMLRPCClient;
+import de.timroes.axmlrpc.XMLRPCException;
 import de.timroes.axmlrpc.XMLRPCServerException;
 import de.timroes.axmlrpc.serializer.SerializerHandler;
 import org.junit.Test;
@@ -89,6 +90,19 @@ public class TestResponseParser {
     }
 
     @Test
+    public void testResponseWithInlineXmlComment() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream("<methodResponse>" +
+                "  <params>" +
+                "    <param>" +
+                "      <value><string>ti<!--blah-->ti</string></value>" +
+                "    </param>" +
+                "  </params>" +
+                "</methodResponse>"), false);
+        assertEquals("titi", actual);
+    }
+
+    @Test
     public void testResponseWithSpecialChars() throws Exception {
         ResponseParser sut = new ResponseParser();
         Object actual = sut.parse(sh, strToStream("<methodResponse>" +
@@ -99,6 +113,37 @@ public class TestResponseParser {
                 "  </params>" +
                 "</methodResponse>"), false);
         assertEquals("to<to", actual);
+    }
+
+    @Test(expected = XMLRPCException.class)
+    public void testErrorMissingMethodResponseTag() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream(
+                "  <params>" +
+                "    <param>" +
+                "      <value><string>toto</string></value>" +
+                "    </param>" +
+                "  </params>"), false);
+    }
+
+    @Test(expected = XMLRPCException.class)
+    public void testErrorMissingParamsTag() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream("<methodResponse>" +
+                "    <param>" +
+                "      <value><string>toto</string></value>" +
+                "    </param>" +
+                "</methodResponse>"), false);
+    }
+
+    @Test(expected = XMLRPCException.class)
+    public void testErrorMissingParamTag() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream("<methodResponse>" +
+                "  <params>" +
+                "      <value><string>toto</string></value>" +
+                "  </params>" +
+                "</methodResponse>"), false);
     }
 
     private static InputStream strToStream(String str){
