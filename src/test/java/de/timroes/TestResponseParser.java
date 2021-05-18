@@ -7,10 +7,15 @@ import de.timroes.axmlrpc.XMLRPCClient;
 import de.timroes.axmlrpc.XMLRPCException;
 import de.timroes.axmlrpc.XMLRPCServerException;
 import de.timroes.axmlrpc.serializer.SerializerHandler;
+import de.timroes.base64.Base64;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class TestResponseParser {
     public final static String xmlDecl = "<?xml version=\"1.0\"?>";
@@ -29,6 +34,64 @@ public class TestResponseParser {
                 "  </params>" +
                 "</methodResponse>"), false);
         assertEquals("toto", actual);
+    }
+
+    @Test
+    public void testResponseWithComplexValue() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream(xmlDecl +
+                "<methodResponse>" +
+                "  <params>" +
+                "    <param>" +
+                "      <value>" +
+                "        <struct>" +
+                "          <member><name>intValue</name><value><i4>12</i4></value></member>" +
+                "          <member><name>otherIntValue</name><value><int>13</int></value></member>" +
+                "          <member><name>boolValue</name><value><boolean>1</boolean></value></member>" +
+                "          <member><name>strValue</name><value><string>toto</string></value></member>" +
+                "          <member><name>doubleValue</name><value><double>12.4</double></value></member>" +
+                "          <member><name>dateValue</name><value><dateTime.iso8601>20200908T0440Z</dateTime.iso8601></value></member>" +
+                // Don't test base64 because it seems assertEqual will do a reference equals on arrray of bytes so it's not easily testable here
+                // so we test it in a test below
+                //"          <member><name>base64Value</name><value><base64>QWVyaXM=</base64></value></member>" +
+                "          <member><name>nestedValue</name><value><struct> " +
+                "            <member><name>innerStrValue</name><value><string>inner</string></value></member>" +
+                "          </struct></value></member>" +
+                "        </struct>" +
+                "      </value>" +
+                "    </param>" +
+                "  </params>" +
+                "</methodResponse>"), false);
+
+        Map<Object, Object> expected = new TreeMap<>();
+        expected.put("intValue", 12);
+        expected.put("otherIntValue", 13);
+        expected.put("boolValue", true);
+        expected.put("strValue", "toto");
+        expected.put("doubleValue", 12.4);
+        expected.put("dateValue", new Date(1599540000000L));
+        Map<Object, Object> innerStruct = new TreeMap<>();
+        innerStruct.put("innerStrValue", "inner");
+        expected.put("nestedValue", innerStruct);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testResponseWithBase64Value() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream(xmlDecl +
+                "<methodResponse>" +
+                "  <params>" +
+                "    <param>" +
+                "      <value>" +
+                "        <base64>QWVyaXM=</base64>" +
+                "      </value>" +
+                "    </param>" +
+                "  </params>" +
+                "</methodResponse>"), false);
+
+        String actualAsStr = new String((byte[]) actual, StandardCharsets.UTF_8);
+        assertEquals("Aeris", actualAsStr);
     }
 
     @Test
