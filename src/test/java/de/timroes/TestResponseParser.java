@@ -7,7 +7,6 @@ import de.timroes.axmlrpc.XMLRPCClient;
 import de.timroes.axmlrpc.XMLRPCException;
 import de.timroes.axmlrpc.XMLRPCServerException;
 import de.timroes.axmlrpc.serializer.SerializerHandler;
-import de.timroes.base64.Base64;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -34,6 +33,20 @@ public class TestResponseParser {
                 "  </params>" +
                 "</methodResponse>"), false);
         assertEquals("toto", actual);
+    }
+
+    @Test
+    public void testResponseWithNonAsciiCharacter() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream(xmlDecl +
+                "<methodResponse>" +
+                "  <params>" +
+                "    <param>" +
+                "      <value><string>Aéris</string></value>" +
+                "    </param>" +
+                "  </params>" +
+                "</methodResponse>"), false);
+        assertEquals("Aéris", actual);
     }
 
     @Test
