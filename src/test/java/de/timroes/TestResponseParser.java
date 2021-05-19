@@ -50,6 +50,20 @@ public class TestResponseParser {
     }
 
     @Test
+    public void testUTF16Response() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, bytesToStream((xmlDecl +
+                "<methodResponse>" +
+                "  <params>" +
+                "    <param>" +
+                "      <value><string>toto</string></value>" +
+                "    </param>" +
+                "  </params>" +
+                "</methodResponse>").getBytes(StandardCharsets.UTF_16)), false);
+        assertEquals("toto", actual);
+    }
+
+    @Test
     public void testResponseWithComplexValue() throws Exception {
         ResponseParser sut = new ResponseParser();
         Object actual = sut.parse(sh, strToStream(xmlDecl +
@@ -223,6 +237,11 @@ public class TestResponseParser {
     }
 
     private static InputStream strToStream(String str){
-        return new ByteArrayInputStream(str.getBytes());
+        return bytesToStream(str.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static InputStream bytesToStream(byte[] bytes){
+        System.out.println("length: " + bytes.length);
+        return new ByteArrayInputStream(bytes);
     }
 }
