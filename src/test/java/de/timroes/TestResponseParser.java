@@ -2,10 +2,7 @@ package de.timroes;
 
 import static org.junit.Assert.*;
 
-import de.timroes.axmlrpc.ResponseParser;
-import de.timroes.axmlrpc.XMLRPCClient;
-import de.timroes.axmlrpc.XMLRPCException;
-import de.timroes.axmlrpc.XMLRPCServerException;
+import de.timroes.axmlrpc.*;
 import de.timroes.axmlrpc.serializer.SerializerHandler;
 import org.junit.Test;
 
@@ -30,6 +27,20 @@ public class TestResponseParser {
                 "    <param>" +
                 "      <value><string>toto</string></value>" +
                 "    </param>" +
+                "  </params>" +
+                "</methodResponse>"), false);
+        assertEquals("toto", actual);
+    }
+
+    @Test
+    public void testWithTrailingWhitespaceInTags() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream(xmlDecl +
+                "<methodResponse >" +
+                "  <params>" +
+                "    <param>" +
+                "      <value><string>toto</string></value>" +
+                "    </param >" +
                 "  </params>" +
                 "</methodResponse>"), false);
         assertEquals("toto", actual);
@@ -241,7 +252,6 @@ public class TestResponseParser {
     }
 
     private static InputStream bytesToStream(byte[] bytes){
-        System.out.println("length: " + bytes.length);
         return new ByteArrayInputStream(bytes);
     }
 }
