@@ -47,6 +47,34 @@ public class TestResponseParser {
     }
 
     @Test
+    public void testWithTrailingEndlineInTags() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream(xmlDecl +
+                "<methodResponse\n>" +
+                "  <params>" +
+                "    <param>" +
+                "      <value><string>toto</string></value>" +
+                "    </param\n>" +
+                "  </params>" +
+                "</methodResponse>"), false);
+        assertEquals("toto", actual);
+    }
+
+    @Test
+    public void testWithTrailingTabInTags() throws Exception {
+        ResponseParser sut = new ResponseParser();
+        Object actual = sut.parse(sh, strToStream(xmlDecl +
+                "<methodResponse\t>" +
+                "  <params>" +
+                "    <param>" +
+                "      <value><string>toto</string></value>" +
+                "    </param\t>" +
+                "  </params>" +
+                "</methodResponse>"), false);
+        assertEquals("toto", actual);
+    }
+
+    @Test
     public void testResponseWithNonAsciiCharacter() throws Exception {
         ResponseParser sut = new ResponseParser();
         Object actual = sut.parse(sh, strToStream(xmlDecl +
