@@ -6,3 +6,7 @@ before_install:
   - if [ $TRAVIS_CPU_ARCH = ppc64le ]; then
           sudo apt-get install maven ;
     fi
+
+cache:
+  directories:
+  - $HOME/.m2
