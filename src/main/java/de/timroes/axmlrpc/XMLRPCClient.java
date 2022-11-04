@@ -660,7 +660,7 @@ public class XMLRPCClient {
 				authManager.setAuthentication(http);
 				cookieManager.setCookies(http);
 
-				OutputStreamWriter stream = new OutputStreamWriter(http.getOutputStream());
+				OutputStreamWriter stream = new OutputStreamWriter(http.getOutputStream(), "UTF-8");
 				stream.write(c.getXML(isFlagSet(FLAGS_DEBUG)));
 				stream.flush();
 				stream.close();
