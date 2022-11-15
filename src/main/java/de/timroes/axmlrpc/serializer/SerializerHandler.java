@@ -48,15 +48,17 @@ public class SerializerHandler {
 		this(XMLRPCClient.FLAGS_DEBUG);
 	}
 
-	public SerializerHandler(int flags) {
+	public SerializerHandler(int flags) { this(flags, DateTimeSerializer.DEFAULT_DATETIME_FORMAT); }
+
+	public SerializerHandler(int flags, String datetimeFormat) {
 		this.flags = flags;
 		string = new StringSerializer(
-			(flags & XMLRPCClient.FLAGS_NO_STRING_ENCODE) == 0,
-			(flags & XMLRPCClient.FLAGS_NO_STRING_DECODE) == 0
+				(flags & XMLRPCClient.FLAGS_NO_STRING_ENCODE) == 0,
+				(flags & XMLRPCClient.FLAGS_NO_STRING_DECODE) == 0
 		);
 		struct = new StructSerializer(this);
 		array = new ArraySerializer(this);
-		datetime = new DateTimeSerializer((flags & XMLRPCClient.FLAGS_ACCEPT_NULL_DATES) != 0);
+		datetime = new DateTimeSerializer(shouldAcceptNullDates(flags), datetimeFormat);
 	}
 
 	/**
@@ -195,6 +197,10 @@ public class SerializerHandler {
 
 		return s.serialize(object);
 
+	}
+
+	private boolean shouldAcceptNullDates(int flags) {
+		return (flags & XMLRPCClient.FLAGS_ACCEPT_NULL_DATES) != 0;
 	}
 
 }

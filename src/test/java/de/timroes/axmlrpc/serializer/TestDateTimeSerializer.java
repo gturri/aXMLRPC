@@ -120,6 +120,15 @@ public class TestDateTimeSerializer {
 		assertDeserializeEquals(new Date(81, 11, 31, 23, 59, 59), "1981-12-31T23:59:59Z");
 	}
 
+	@Test
+	public void canDoCustomDatetimeSerialization() {
+		String customDatetimeFormat = "yyyyMMdd'T'HH:mm:ss";
+		String expectedSerialization = "\n<dateTime.iso8601>19811231T23:58:59</dateTime.iso8601>\n";
+		Date date = new Date(81, 11, 31, 23, 58, 59);
+		String actualSerialization = new DateTimeSerializer(false, customDatetimeFormat).serialize(date).toString();
+		assertEquals(expectedSerialization, actualSerialization);
+	}
+
 	private void assertDeserializeEquals(Date expected, String toDeserialize) throws Exception {
 		Date date = (Date) new DateTimeSerializer(false).deserialize(toDeserialize);
 		assertEquals(expected, date);

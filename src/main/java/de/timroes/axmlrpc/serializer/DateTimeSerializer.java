@@ -15,13 +15,19 @@ import fr.turri.jiso8601.Iso8601Deserializer;
  */
 public class DateTimeSerializer implements Serializer {
 
-	private static final String DATETIME_FORMAT = "yyyyMMdd'T'HHmmss";
-	private final SimpleDateFormat DATE_FORMATER = new SimpleDateFormat(DATETIME_FORMAT);
+	public static final String DEFAULT_DATETIME_FORMAT = "yyyyMMdd'T'HHmmss";
+	private final SimpleDateFormat dateFormatter;
 
 	private final boolean accepts_null_input;
 
 	public DateTimeSerializer(boolean accepts_null_input) {
 		this.accepts_null_input = accepts_null_input;
+		this.dateFormatter = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
+	}
+
+	public DateTimeSerializer(boolean accepts_null_input, String datetimeFormat) {
+		this.accepts_null_input = accepts_null_input;
+		this.dateFormatter = new SimpleDateFormat(datetimeFormat);
 	}
 
 
@@ -45,7 +51,7 @@ public class DateTimeSerializer implements Serializer {
 	@Override
 	public XmlElement serialize(Object object) {
 		return XMLUtil.makeXmlTag(SerializerHandler.TYPE_DATETIME,
-				DATE_FORMATER.format(object));
+				dateFormatter.format(object));
 	}
 
 }
