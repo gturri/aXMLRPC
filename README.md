@@ -281,7 +281,8 @@ aXMLRPC uses http with the java.net API. If you want to use another protocol or 
 
 ```java
     boolean debug = false;
-    SerializerHandler serializerHandler = new SerializerHandler(); // or you may build it with flags
+    // or you may build it with flags and/or a custom datetime format
+    SerializerHandler serializerHandler = new SerializerHandler();
     String payload = new Call(serializerHandler, "add", 5, 10).getXML(debug);
 
     InputStream istream = sendPayloadWithMyTransport(payload); // use your implementation here
