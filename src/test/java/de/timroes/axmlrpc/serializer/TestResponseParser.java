@@ -72,6 +72,13 @@ public class TestResponseParser {
 		assertTrue("Should have thrown because date was empty and we used the default behavior", didThrow);
 	}
 
+	@Test
+	public void canParseResponseWithCDATA() throws Exception {
+		setMockWithXmlRpcContent("<value><string><![CDATA[ab<&>cd]]></string></value>");
+
+		assertEquals("ab<&>cd", makeDummyCall());
+	}
+
 	private void setMockWithXmlRpcContent(String content){
 		stubFor(post(urlEqualTo(endPoint))
 				.willReturn(aResponse()

@@ -1,3 +1,5 @@
+Add support for CDATA section in the server response
+
 1.13.0
 DateTime serializer format is now injectable
 

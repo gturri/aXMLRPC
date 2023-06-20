@@ -76,7 +76,7 @@ public class XMLUtil {
 				continue;
 			}
 
-			if(n.getNodeType() != Node.TEXT_NODE) {
+			if(n.getNodeType() != Node.TEXT_NODE && n.getNodeType() != Node.CDATA_SECTION_NODE) {
 				throw new XMLRPCException("Element must contain only text elements.");
 			}
 
