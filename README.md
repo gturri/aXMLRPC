@@ -1,3 +1,8 @@
+Beware, this library contains a nasty vulnerability
+===================================================
+
+As long as the vulnerability described in https://github.com/gturri/aXMLRPC/issues/143 is not fixed, you should probably not use aXMLRPC in your projects. :(
+
 What is aXMLRPC?
 ================
 
