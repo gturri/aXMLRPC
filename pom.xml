@@ -43,6 +43,11 @@
 			<version>0.2</version>
 		</dependency>
         <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.12.2</version>
+        </dependency>
+        <dependency>
           <groupId>com.github.tomakehurst</groupId>
           <artifactId>wiremock-jre8</artifactId>
           <version>2.28.0</version>
