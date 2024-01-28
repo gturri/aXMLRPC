@@ -13,7 +13,7 @@ import org.junit.Rule;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import de.timroes.axmlrpc.XMLRPCClient;
+import de.timroes.axmlrpc.*;
 
 public class TestResponseParser {
 	private final int port = 8080;
@@ -73,6 +73,25 @@ public class TestResponseParser {
 	}
 
 	@Test
+	public void robustToCWE611() throws Exception {
+		setMockWithRawContent("<?xml version=\"1.0\"?> <!DOCTYPE replace [<!ENTITY ent SYSTEM \"http://localhost/malware\"> ]><methodResponse><params><param><value><string>&ent;</string></value></param></params></methodResponse>");
+		boolean didThrowExpectedException = false;
+
+		try {
+		  makeDummyCall(XMLRPCClient.FLAGS_NONE);
+		} catch(XMLRPCException e) {
+			didThrowExpectedException = isCWE611ExceptedException(e);
+			if (!didThrowExpectedException) {
+				// if we don't get the exception we were expecting, rethrow so user has clues about what went wrong
+				// and can troubleshoot the test more easily
+				throw e;
+			}
+		}
+
+		assertTrue("Should have thrown because this payload is malicious", didThrowExpectedException);
+	}
+
+	@Test
 	public void canParseResponseWithCDATA() throws Exception {
 		setMockWithXmlRpcContent("<value><string><![CDATA[ab<&>cd]]></string></value>");
 
@@ -80,11 +99,23 @@ public class TestResponseParser {
 	}
 
 	private void setMockWithXmlRpcContent(String content){
+	  setMockWithRawContent("<methodResponse><params><param>" + content + "</param></params></methodResponse>");
+	}
+
+	private void setMockWithRawContent(String rawContent) {
 		stubFor(post(urlEqualTo(endPoint))
 				.willReturn(aResponse()
 						.withStatus(200)
-						.withBody("<methodResponse><params><param>" + content + "</param></params></methodResponse>")
+						.withBody(rawContent)
 						));
+	}
+
+	private boolean isCWE611ExceptedException(XMLRPCException e) {
+		Throwable cause = e.getCause();
+		if (cause == null) {
+      return false;
+		}
+		return cause.getMessage().contains("DOCTYPE is disallowed");
 	}
 
 	private Object makeDummyCall() throws Exception {
