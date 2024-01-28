@@ -1,3 +1,4 @@
+1.14.0
 Fix security issue CWE-611
 Add support for CDATA section in the server response
 
