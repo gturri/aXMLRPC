@@ -183,7 +183,7 @@ public class SerializerHandler {
 			byte[] old = (byte[])object;
 			Byte[] boxed = new Byte[old.length];
 			for(int i = 0; i < boxed.length; i++) {
-				boxed[i] = new Byte(old[i]);
+				boxed[i] = Byte.valueOf(old[i]);
 			}
 			object = boxed;
 			s = base64;
