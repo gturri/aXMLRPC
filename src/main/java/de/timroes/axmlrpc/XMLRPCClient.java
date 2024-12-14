@@ -638,7 +638,10 @@ public class XMLRPCClient {
 		 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 		 */
 		public Object call(String methodName, Object[] params) throws XMLRPCException {
+			return callWithOverridenTimeout(methodName, connectTimeout, readTimeout, params);
+		}
 
+		public Object callWithOverridenTimeout(String methodName, int connectTimeout, int readTimeout, Object[] params) throws XMLRPCException {
 			try {
 
 				Call c = createCall(methodName, params);
