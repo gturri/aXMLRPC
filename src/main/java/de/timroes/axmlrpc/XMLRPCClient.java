@@ -196,7 +196,8 @@ public class XMLRPCClient {
 
 	private Proxy proxy;
 
-	private int timeout;
+	private int connectTimeout;
+	private int readTimeout;
 	private final SerializerHandler serializerHandler;
 
 	/**
@@ -296,7 +297,7 @@ public class XMLRPCClient {
 	}
 
 	/**
-	 * Sets the time in seconds after which a call should timeout.
+	 * Set both the connect timeout and the read timeout.
 	 * If {@code timeout} will be zero or less the connection will never timeout.
 	 * In case the connection times out an {@link XMLRPCTimeoutException} will
 	 * be thrown for calls made by {@link #call(java.lang.String, java.lang.Object[])}.
@@ -307,7 +308,16 @@ public class XMLRPCClient {
 	 * @param timeout The timeout for connections in seconds.
 	 */
 	public void setTimeout(int timeout) {
-		this.timeout = timeout;
+		this.connectTimeout = timeout;
+		this.readTimeout = timeout;
+	}
+
+	public void setConnectTimeout(int timeout) {
+		this.connectTimeout = timeout;
+	}
+
+	public void setReadTimeout(int timeout) {
+		this.readTimeout = timeout;
 	}
 
 	/**
@@ -628,7 +638,10 @@ public class XMLRPCClient {
 		 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 		 */
 		public Object call(String methodName, Object[] params) throws XMLRPCException {
+			return callWithOverridenTimeout(methodName, connectTimeout, readTimeout, params);
+		}
 
+		public Object callWithOverridenTimeout(String methodName, int connectTimeout, int readTimeout, Object[] params) throws XMLRPCException {
 			try {
 
 				Call c = createCall(methodName, params);
@@ -647,9 +660,11 @@ public class XMLRPCClient {
 				http.setDoInput(true);
 
 				// Set timeout
-				if(timeout > 0) {
-					http.setConnectTimeout(timeout * 1000);
-					http.setReadTimeout(timeout * 1000);
+				if(connectTimeout > 0) {
+					http.setConnectTimeout(connectTimeout * 1000);
+				}
+				if (readTimeout > 0) {
+					http.setReadTimeout(readTimeout * 1000);
 				}
 
 				// Set the request parameters
