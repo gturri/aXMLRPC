@@ -470,11 +470,31 @@ public class XMLRPCClient {
 	 *
 	 * @param method A method name to call.
 	 * @param params An array of parameters for the method.
-	 * @return The result of the server.
+	 * @return The result of the call.
 	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 	 */
 	public Object call(String method, Object... params) throws XMLRPCException {
-		return new Caller().call(method, params);
+		return callWithOverriddenTimeout(method, connectTimeout, readTimeout, params);
+	}
+
+	/**
+	 * Call a remote procedure on the server. The method must be described by
+	 * a method name. If the method requires parameters, this must be set.
+	 * The type of the return object depends on the server. You should consult
+	 * the server documentation and then cast the return value according to that.
+	 * This method will block until the server returned a result (or an error occurred).
+	 * Read the README file delivered with the source code of this library for more
+	 * information.
+	 *
+	 * @param method A method name to call.
+	 * @param connectTimeout The connect timeout to use for this call.
+	 * @param readTimeout The read timeout to use for this call.
+	 * @param params An array of parameters for the method.
+	 * @return The result of the call.
+	 * @throws XMLRPCException Will be thrown if an error occurred during the call.
+	 */
+	public Object callWithOverriddenTimeout(String method, int connectTimeout, int readTimeout, Object[] params) throws XMLRPCException {
+		return new Caller().call(method, connectTimeout, readTimeout, params);
 	}
 
 	/**
@@ -493,8 +513,33 @@ public class XMLRPCClient {
 	 * @return The id of the current request.
 	 */
 	public long callAsync(XMLRPCCallback listener, String methodName, Object... params) {
+		return callAsyncWithOverriddenTimeout(listener, methodName, connectTimeout, readTimeout, params);
+	}
+
+	/**
+	 * Asynchronously call a remote procedure on the server. The method must be
+	 * described by a method name. If the method requires parameters, this must
+	 * be set. When the server returns a response the onResponse method is called
+	 * on the listener. If the server returns an error the onServerError method
+	 * is called on the listener. The onError method is called whenever something
+	 * fails. This method returns immediately and returns an identifier for the
+	 * request. All listener methods get this id as a parameter to distinguish
+	 * between
+	 * multiple requests.
+	 *
+	 * @param listener       A listener, which will be notified about the server
+	 *                       response or errors.
+	 * @param methodName     A method name to call on the server.
+	 * @param connectTimeout The connect timeout to use for this call.
+	 * @param readTimeout    The read timeout to use for this call.
+	 * @param params         An array of parameters for the method.
+	 * @return The id of the current request.
+	 */
+	public long callAsyncWithOverriddenTimeout(
+		XMLRPCCallback listener, String methodName, int connectTimeout, int readTimeout,
+		Object... params) {
 		long id = System.currentTimeMillis();
-		new Caller(listener, id, methodName, params).start();
+		new Caller(listener, id, methodName, connectTimeout, readTimeout, params).start();
 		return id;
 	}
 
@@ -559,6 +604,8 @@ public class XMLRPCClient {
 		private long threadId;
 		private String methodName;
 		private Object[] params;
+		private int connectTimeout;
+		private int readTimeout;
 
 		private volatile boolean canceled;
 		private HttpURLConnection http;
@@ -569,13 +616,18 @@ public class XMLRPCClient {
 		 * @param listener The listener to notice about the response or an error.
 		 * @param threadId An id that will be send to the listener.
 		 * @param methodName The method name to call.
+		 * @param connectTimeout The connect timeout to use for this call.
+		 * @param readTimeout The read timeout to use for this call.
 		 * @param params The parameters of the call or null.
 		 */
-		public Caller(XMLRPCCallback listener, long threadId, String methodName, Object[] params) {
+		public Caller(XMLRPCCallback listener, long threadId, String methodName,
+			int connectTimeout, int readTimeout, Object[] params) {
 			this.listener = listener;
 			this.threadId = threadId;
 			this.methodName = methodName;
 			this.params = params;
+			this.connectTimeout = connectTimeout;
+			this.readTimeout = readTimeout;
 		}
 
 		/**
@@ -599,7 +651,7 @@ public class XMLRPCClient {
 
 			try {
 				backgroundCalls.put(threadId, this);
-				Object o = this.call(methodName, params);
+				Object o = this.call(methodName, connectTimeout, readTimeout, params);
 				listener.onResponse(threadId, o);
 			} catch(CancelException ex) {
 				// Don't notify the listener, if the call has been canceled.
@@ -634,14 +686,12 @@ public class XMLRPCClient {
 		 *
 		 * @param methodName A method name to call.
 		 * @param params An array of parameters for the method.
-		 * @return The result of the server.
+		 * @param connectTimeout The connect timeout to use for this call.
+		 * @param readTimeout The read timeout to use for this call.
+		 * @return The result of the call.
 		 * @throws XMLRPCException Will be thrown if an error occurred during the call.
 		 */
-		public Object call(String methodName, Object[] params) throws XMLRPCException {
-			return callWithOverridenTimeout(methodName, connectTimeout, readTimeout, params);
-		}
-
-		public Object callWithOverridenTimeout(String methodName, int connectTimeout, int readTimeout, Object[] params) throws XMLRPCException {
+		public Object call(String methodName, int connectTimeout, int readTimeout, Object[] params) throws XMLRPCException {
 			try {
 
 				Call c = createCall(methodName, params);
@@ -730,7 +780,7 @@ public class XMLRPCClient {
 						URL oldURL = url;
 						url = new URL(newLocation);
 						http.disconnect();
-						Object forwardedResult = call(methodName, params);
+						Object forwardedResult = call(methodName, connectTimeout, readTimeout, params);
 
 						// In case of temporary forward, restore original URL again for next call.
 						if(temporaryForward) {
