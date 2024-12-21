@@ -1,3 +1,5 @@
+Fix options added in 1.15.0 (those were not usable)
+
 1.15.0
 Add
 - setConnectTimeout
