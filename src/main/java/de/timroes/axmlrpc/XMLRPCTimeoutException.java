@@ -7,9 +7,11 @@ package de.timroes.axmlrpc;
  * @author Tim Roes
  */
 public class XMLRPCTimeoutException extends XMLRPCException {
-
 	XMLRPCTimeoutException(String ex) {
 		super(ex);
 	}
 
+	XMLRPCTimeoutException(String message, Exception cause) {
+		super(message, cause);
+	}
 }
