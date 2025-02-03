@@ -812,7 +812,7 @@ public class XMLRPCClient {
 				return responseParser.parse(serializerHandler, istream, isFlagSet(FLAGS_DEBUG));
 
 			} catch(SocketTimeoutException ex) {
-				throw new XMLRPCTimeoutException("The XMLRPC call timed out.");
+				throw new XMLRPCTimeoutException("The XMLRPC call timed out.", ex);
 			} catch (IOException ex) {
 				// If the thread has been canceled this exception will be thrown.
 				// So only throw an exception if the thread hasnt been canceled
